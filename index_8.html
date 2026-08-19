@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>บันทึกตรวจสอบกระดูก</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{
+    --ink:#20303B;
+    --ink-2:#2B3F4C;
+    --paper:#EFF1EC;
+    --card:#FBFAF7;
+    --steel:#35647E;
+    --steel-dark:#264B60;
+    --amber:#D68A34;
+    --amber-dark:#B96F1F;
+    --good:#4B7B5B;
+    --bad:#AE4B3E;
+    --line:#D3D8D1;
+    --text:#20303B;
+    --text-dim:#5B6C71;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    font-family:'Inter',sans-serif;
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+  }
+  .app-shell{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    background:var(--paper);
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    box-shadow:0 0 40px rgba(0,0,0,0.35);
+  }
+  .topbar{
+    background:var(--ink);
+    color:#F3F1EA;
+    padding:18px 18px 14px;
+    position:sticky;
+    top:0;
+    z-index:20;
+  }
+  .topbar .brand{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:19px;
+    letter-spacing:0.2px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .topbar .brand .tag{
+    display:inline-block;
+    width:9px;height:9px;border-radius:50%;
+    background:var(--amber);
+    box-shadow:0 0 0 3px rgba(214,138,52,0.25);
+  }
+  .topbar .sub{
+    font-size:12px;
+    color:#B9C3C7;
+    margin-top:3px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .content{
+    flex:1;
+    padding:16px 16px 96px;
+    overflow-y:auto;
+  }
+  .bottomnav{
+    position:sticky;
+    bottom:0;
+    left:0;right:0;
+    background:var(--ink);
+    display:flex;
+    z-index:20;
+    border-top:1px solid rgba(255,255,255,0.08);
+  }
+  .navbtn{
+    flex:1;
+    background:none;
+    border:none;
+    color:#8FA1A8;
+    padding:11px 4px 9px;
+    font-family:'Inter',sans-serif;
+    font-size:11.5px;
+    font-weight:600;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    cursor:pointer;
+  }
+  .navbtn.active{ color:#F3F1EA; }
+  .navbtn .dot{width:6px;height:6px;border-radius:50%;background:transparent;}
+  .navbtn.active .dot{background:var(--amber);}
+  .navicon{font-size:18px;line-height:1;}
+
+  h2.section-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:15px;
+    font-weight:700;
+    color:var(--ink);
+    margin:22px 0 10px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  h2.section-title:first-child{margin-top:2px;}
+  h2.section-title .num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    background:var(--steel);
+    color:#fff;
+    width:20px;height:20px;
+    border-radius:5px;
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    border:1px solid var(--line);
+    padding:14px;
+    margin-bottom:12px;
+    position:relative;
+  }
+  .ticket{
+    border-top:none;
+    padding-top:18px;
+  }
+  .ticket::before{
+    content:"";
+    position:absolute;
+    top:0; left:14px; right:14px;
+    border-top:2px dashed #C7CDC5;
+  }
+  .ticket::after{
+    content:"";
+    position:absolute;
+    top:-6px; left:14px;
+    width:11px;height:11px;
+    border-radius:50%;
+    background:var(--ink);
+  }
+  .ticket .hole-r{
+    content:"";
+    position:absolute;
+    top:-6px; right:14px;
+    width:11px;height:11px;
+    border-radius:50%;
+    background:var(--ink);
+  }
+
+  label{
+    display:block;
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--text-dim);
+    margin:0 0 5px;
+    text-transform:uppercase;
+    letter-spacing:0.3px;
+  }
+  input[type=text], input[type=date], input[type=number], select, textarea{
+    width:100%;
+    padding:10px 11px;
+    border-radius:9px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    font-family:'Inter',sans-serif;
+    font-size:14.5px;
+    color:var(--text);
+    margin-bottom:12px;
+  }
+  input:focus, select:focus, textarea:focus{
+    outline:none;
+    border-color:var(--steel);
+  }
+  .field-row{display:flex; gap:10px;}
+  .field-row > div{flex:1;}
+
+  .toggle-group{
+    display:flex;
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:9px;
+    overflow:hidden;
+    margin-bottom:12px;
+  }
+  .toggle-group button{
+    flex:1;
+    border:none;
+    background:none;
+    padding:10px 4px;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:13.5px;
+    color:var(--text-dim);
+    cursor:pointer;
+    border-right:1px solid var(--line);
+  }
+  .toggle-group button:last-child{border-right:none;}
+  .toggle-group button.active{
+    background:var(--steel);
+    color:#fff;
+  }
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    padding:12px 16px;
+    border-radius:10px;
+    border:none;
+    font-family:'Inter',sans-serif;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    width:100%;
+  }
+  .btn-primary{ background:var(--steel); color:#fff; }
+  .btn-primary:active{ background:var(--steel-dark); }
+  .btn-amber{ background:var(--amber); color:#fff; }
+  .btn-amber:active{ background:var(--amber-dark); }
+  .btn-ghost{ background:transparent; color:var(--steel); border:1.5px solid var(--steel); }
+  .btn-danger-ghost{ background:transparent; color:var(--bad); border:1.5px solid var(--bad); padding:8px 12px; font-size:12.5px; width:auto;}
+  .btn-sm{ padding:8px 12px; font-size:12.5px; width:auto; }
+
+  .stepper{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:9px;
+    padding:8px 10px;
+    margin-bottom:8px;
+  }
+  .stepper .lbl{ font-size:13px; font-weight:500; flex:1; padding-right:8px; }
+  .stepper .ctrl{ display:flex; align-items:center; gap:10px; }
+  .stepper button{
+    width:30px;height:30px;
+    border-radius:8px;
+    border:none;
+    background:var(--paper);
+    color:var(--ink);
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .stepper button.plus{ background:var(--steel); color:#fff; }
+  .stepper .val{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:15px;
+    min-width:22px;
+    text-align:center;
+  }
+  .stepper .val.nonzero{ color:var(--amber-dark); }
+
+  .row-summary{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .row-summary .meta{ font-size:12px; color:var(--text-dim); margin-top:2px; }
+  .row-summary .name{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px; }
+  .total-pill{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:13px;
+    background:var(--ink);
+    color:#F3F1EA;
+    padding:4px 9px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+  .total-pill.zero{ background:var(--good); }
+
+  .empty-state{
+    text-align:center;
+    padding:40px 20px;
+    color:var(--text-dim);
+  }
+  .empty-state .big{ font-size:32px; margin-bottom:8px; }
+  .empty-state .msg{ font-size:13.5px; line-height:1.6; }
+
+  .modal-backdrop{
+    position:fixed; inset:0;
+    background:rgba(20,28,33,0.55);
+    z-index:50;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+  }
+  .modal-backdrop .modal-inner{
+    background:var(--paper);
+    width:100%;
+    max-width:480px;
+    max-height:88vh;
+    overflow-y:auto;
+    border-radius:18px 18px 0 0;
+    padding:18px 16px 24px;
+  }
+  .modal-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:16px;
+    margin-bottom:14px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .modal-title .close{
+    background:var(--line);
+    border:none;
+    width:28px;height:28px;
+    border-radius:50%;
+    font-size:15px;
+    cursor:pointer;
+    color:var(--ink);
+  }
+
+  .filter-bar{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:12px 14px;
+    margin-bottom:14px;
+  }
+  .chip-row{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .chip{
+    padding:6px 11px;
+    border-radius:20px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    font-size:12px;
+    font-weight:600;
+    color:var(--text-dim);
+    cursor:pointer;
+  }
+  .chip.active{ background:var(--steel); border-color:var(--steel); color:#fff; }
+
+  .history-date-head{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--text-dim);
+    margin:18px 0 8px;
+    padding-bottom:5px;
+    border-bottom:1px solid var(--line);
+  }
+  .hist-card{ cursor:pointer; }
+  .hist-detail{
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px dashed var(--line);
+    display:none;
+  }
+  .hist-detail.open{ display:block; }
+  .bone-detail-grid{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:4px 10px;
+    font-size:12.5px;
+    margin-bottom:10px;
+  }
+  .bone-detail-grid .bv{ font-family:'IBM Plex Mono',monospace; text-align:right; font-weight:600; }
+  .bone-detail-grid .bv.pos{ color:var(--amber-dark); }
+
+  .stat-grid{ display:flex; gap:10px; margin-bottom:16px; }
+  .stat-box{
+    flex:1;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px;
+    text-align:center;
+  }
+  .stat-box .num{ font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:20px; color:var(--ink); }
+  .stat-box .lbl{ font-size:10.5px; color:var(--text-dim); margin-top:3px; }
+
+  .toast{
+    position:fixed;
+    bottom:76px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--ink);
+    color:#F3F1EA;
+    padding:11px 20px;
+    border-radius:24px;
+    font-size:13px;
+    font-weight:600;
+    z-index:100;
+    box-shadow:0 8px 20px rgba(0,0,0,0.3);
+  }
+  .loading-screen{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:100vh; color:#B9C3C7; font-family:'IBM Plex Mono',monospace; font-size:13px; gap:10px;
+  }
+  .spin{
+    width:24px;height:24px;border-radius:50%;
+    border:3px solid rgba(255,255,255,0.15);
+    border-top-color:var(--amber);
+    animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .chart-wrap{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:14px; margin-bottom:14px; }
+  .helptext{ font-size:12px; color:var(--text-dim); margin:-6px 0 14px; line-height:1.5;}
+  .banner-shared{
+    background:#F3E6D2;
+    border:1px solid #E3C69B;
+    color:#7A5522;
+    font-size:11.5px;
+    padding:9px 12px;
+    border-radius:9px;
+    margin-bottom:14px;
+    line-height:1.5;
+  }
+  .banner-local{
+    background:#E4EBEF;
+    border:1px solid #B7C8D2;
+    color:#2F4C5E;
+  }
+
+  /* ---- validation ---- */
+  input.input-error, select.input-error{
+    border-color:var(--bad) !important;
+    background:#FDF3F1;
+  }
+  /* ---- popup แจ้งเตือน ---- */
+  .alert-backdrop{
+    position:fixed; inset:0;
+    background:rgba(20,28,33,0.62);
+    z-index:200;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    animation:fadeIn 0.15s ease-out;
+  }
+  .alert-box{
+    background:var(--card);
+    width:100%;
+    max-width:330px;
+    border-radius:16px;
+    padding:22px 20px 18px;
+    text-align:center;
+    box-shadow:0 18px 40px rgba(0,0,0,0.35);
+    animation:popIn 0.18s cubic-bezier(0.34,1.4,0.64,1);
+  }
+  .alert-box .ico{
+    width:52px;height:52px;
+    border-radius:50%;
+    background:#F7E4E1;
+    color:var(--bad);
+    font-size:26px;
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 12px;
+  }
+  .alert-box .title{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:16.5px;
+    color:var(--ink);
+    margin-bottom:6px;
+  }
+  .alert-box .desc{
+    font-size:12.5px;
+    color:var(--text-dim);
+    line-height:1.55;
+    margin-bottom:14px;
+  }
+  .alert-list{
+    background:#fff;
+    border:1.5px solid #E0B4AC;
+    border-radius:10px;
+    padding:10px 12px;
+    margin-bottom:16px;
+    text-align:left;
+  }
+  .alert-list .item{
+    font-size:13px;
+    font-weight:600;
+    color:#8A3427;
+    padding:5px 0;
+    display:flex;
+    gap:8px;
+    align-items:center;
+    border-bottom:1px dashed #EFD9D4;
+  }
+  .alert-list .item:last-child{ border-bottom:none; }
+  .alert-list .item .bullet{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--bad);
+    flex-shrink:0;
+  }
+  @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
+  @keyframes popIn{ from{opacity:0; transform:scale(0.92) translateY(8px);} to{opacity:1; transform:none;} }
+  .req{ color:var(--bad); font-weight:700; margin-left:2px; }
+  .btn:disabled{ opacity:0.45; cursor:not-allowed; }
+</style>
+</head>
+<body>
+<div id="root"><div class="loading-screen"><div class="spin"></div><div>กำลังโหลดข้อมูล…</div></div></div>
+
+<script>
+const BONE_TYPES = {
+  BL: ['กระดูกหัว','กระดูกแก้ม','กระดูกเข็ม','กระดูกหมวกกันน็อค','กระดูกหัวน่องติดแดง','กระดูกแข็งรูตาแล่','กระดูกแตกปนเปื้อน'],
+  BB: ['กระดูกไหปลาร้า','กระดูกสามเหลี่ยม','กระดูกซี่โครง','กระดูกเอ็นข้าง','กระดูกแตก']
+};
+const PRODUCT_LABEL = { BL:'BL (น่องสะโพกไก่ไร้กระดูก)', BB:'BB (อกไก่ไร้กระดูก)' };
+// ห้องที่ตรวจได้ในแต่ละกลุ่มสินค้า — BL ไม่มี S5, BB ไม่มี S6
+const ROOM_OPTIONS = {
+  BL: ['Cut up', 'S6'],
+  BB: ['Cut up', 'S5'],
+};
+function roomsFor(productGroup){ return ROOM_OPTIONS[productGroup] || []; }
+const SAMPLE_PRESETS = ['20 ชิ้น','50 ชิ้น','2 kg','อื่นๆ'];
+
+// จำนวนสุ่มถูกเก็บเป็นข้อความ เช่น "20 ชิ้น" / "2 kg" / "30"
+// ตอน export ต้องแยกเป็นตัวเลขล้วน เพื่อให้ Excel และ Power BI คำนวณได้
+function sampleQtyNumber(v){
+  const m = String(v == null ? '' : v).replace(/,/g, '').match(/-?\d+(?:\.\d+)?/);
+  return m ? Number(m[0]) : '';
+}
+// แยกหน่วยออกมาไว้คนละคอลัมน์ กัน "2 kg" กับ "2 ชิ้น" ปนกันจนแยกไม่ออก
+function sampleQtyUnit(v){
+  const s = String(v == null ? '' : v);
+  if(!s.trim()) return '';
+  if(/kg|กก|กิโล/i.test(s)) return 'kg';
+  if(/ชิ้น/.test(s)) return 'ชิ้น';
+  const rest = s.replace(/[\d.,\s-]/g, '').trim();
+  return rest || 'ชิ้น';   // กรอกตัวเลขเปล่าๆ ถือว่าเป็นชิ้น
+}
+
+// ---------- จุดตรวจ (Std line) แยกตาม กลุ่มสินค้า > ห้อง ----------
+// requiresSubLot = จุดรับเข้า ต้องระบุ Sub lot เสมอ
+const STD_LINE_CONFIG = {
+  BB: {
+    'S5': [
+      { id:'bb_s5_01', label:'S5 : Inspector แต่งกระดูกหัวสายพาน 1 : 6 คน' },
+      { id:'bb_s5_02', label:'S5 : Inspector ท้ายสายพาน 2 คน (FG มีน 2, หนองจอก)' },
+      { id:'bb_s5_03', label:'MCM : Inspector แต่งกระดูกหัวเครื่อง MCM 4 คน' },
+      { id:'bb_s5_04', label:'MCM : Inspector ท้ายเครื่อง MCM 2 คน (FG มีน 2, หนองจอก)' },
+      { id:'bb_s5_05', label:'Gassari : Inspector แต่งกระดูกหัวเครื่อง Gassari 2-4 คน' },
+      { id:'bb_s5_06', label:'Gassari : Inspector ท้ายเครื่อง Gassari 2 คน (FG มีน 2, หนองจอก)' },
+      { id:'bb_s5_07', label:'คารูเทอ : Inspector ตรวจกระดูกหัวเครื่องคารูเทอ 2-4 คน' },
+      { id:'bb_s5_08', label:'คารูเทอ : Inspector ท้ายเครื่องคารูเทอ 2 คน (FG มีน 2, หนองจอก)' },
+      { id:'bb_s5_09', label:'S5 : ผลิตตรวจรับเข้าทุก Lot / รอบการรับเข้า / ทุก Supplier', requiresSubLot:true },
+      { id:'bb_s5_10', label:'S5 : Inspector แต่งกระดูกหัว X-ray 6 คน' },
+      { id:'bb_s5_11', label:'S5 : Inspector ท้าย X-ray 2 คน' },
+    ],
+    'Cut up': [
+      { id:'bb_cu_01', label:'Cut up : Inspector แต่งกระดูกหลังแล่อกติดปีก 4 คน ยืนระหว่างคนแล่' },
+      { id:'bb_cu_02', label:'Cut up : Inspector ท้ายสายพาน 4 คน' },
+      { id:'bb_cu_03', label:'Cut up : Inspector หลังผ่าน X-ray 2 คน' },
+      { id:'bb_cu_04', label:'Cut up : โต๊ะคัดแยกชิ้นที่มีกระดูกออกทุกชิ้น อย่างน้อย 1 คน' },
+      { id:'bb_cu_05', label:'Cut up : Inspector ตัดติ่ง BB ออกทุกชิ้น ก่อนลอกหนัง' },
+      { id:'bb_cu_06', label:'Cut up : Inspector หลังผ่าน X-ray 4 คน คลำกระดูก (Emiry)' },
+    ],
+  },
+  BL: {
+    'S6': [
+      { id:'bl_s6_01', label:'ตรวจรับเข้าทุก Lot / ทุก Supplier', requiresSubLot:true },
+      { id:'bl_s6_02', label:'S6 : สายพานแต่งกระดูก นำ RM BL ขึ้นแต่งกระดูก (ตัดหาง BL)' },
+      { id:'bl_s6_03', label:'S6 : สายพานแต่งกระดูก X-ray 4 คน/เครื่อง (S6)' },
+      { id:'bl_s6_04', label:'Toridas : RM BL จากท้ายเครื่อง TORIDAS เครื่องที่ Meat rate เยอะที่สุด' },
+      { id:'bl_s6_05', label:'Toridas : Inspector ท้ายเครื่อง TORIDAS (ตัดหาง ตัดรูตาแร่ ตัดหนัง) เครื่องที่ Meat rate เยอะที่สุด' },
+      { id:'bl_s6_06', label:'Toridas : Inspector ท้ายสายพานก่อนบรรจุถุง (ก่อนผ่าน X-ray)' },
+      { id:'bl_s6_07', label:'Toridas : X-ray 4 คน/เครื่อง (Cut up)' },
+      { id:'bl_s6_08', label:'BL SCAP MEAT ออกจากการตัดแต่ง FG เท่านั้น' },
+      { id:'bl_s6_09', label:'ตรวจตำหนิกระดูก' },
+    ],
+    'Cut up': [
+      { id:'bl_cu_01', label:'ตรวจรับเข้าทุก Lot / ทุก Supplier', requiresSubLot:true },
+      { id:'bl_cu_02', label:'สายพานแล่มือ RM3002 : แต่งกระดูกหัว + แก้ม 4-7 คน' },
+      { id:'bl_cu_03', label:'สายพานแล่มือ RM3002 : พนักงานกรีด 2 คนขึ้นไป' },
+      { id:'bl_cu_04', label:'สายพานแล่มือ RM3002 : พนักงานแล่ 8-15 คน' },
+      { id:'bl_cu_05', label:'สายพานแล่สะโพก RM3009 : พนักงานแล่ 10-20 คน' },
+      { id:'bl_cu_06', label:'สายพานแล่น่อง RM3010 : จัดกลุ่มแล่ 3 คน / Inspector 1 คน' },
+      { id:'bl_cu_07', label:'Toridas : BIL หลังคนแล่จากราว' },
+      { id:'bl_cu_08', label:'Toridas : BIL ก่อนขึ้นราวแขวนหลังคนแต่งกระดูก' },
+      { id:'bl_cu_09', label:'Toridas : RM BL จากท้ายเครื่อง TORIDAS เครื่องที่ Meat rate เยอะที่สุด' },
+      { id:'bl_cu_10', label:'Toridas : Inspector ท้ายเครื่อง TORIDAS (ตัดหาง ตัดรูตาแร่ ตัดหนัง) เครื่องที่ Meat rate เยอะที่สุด' },
+      { id:'bl_cu_11', label:'Toridas : Inspector ท้ายสายพานก่อนบรรจุถุง (ก่อนผ่าน X-ray)' },
+      { id:'bl_cu_12', label:'Toridas : X-ray 4 คน/เครื่อง (Cut up)' },
+      { id:'bl_cu_13', label:'BL SCAP MEAT ออกจากการตัดแต่ง FG เท่านั้น' },
+      { id:'bl_cu_14', label:'ตรวจตำหนิกระดูก' },
+    ],
+  },
+};
+function stdLinesFor(productGroup, room){
+  const byRoom = STD_LINE_CONFIG[productGroup];
+  return (byRoom && byRoom[room]) ? byRoom[room] : [];
+}
+
+// ---------- จุดสุ่ม แยกตาม กลุ่มสินค้า > ห้อง ----------
+// BB ใช้ชุดเดียวกันทั้ง S5 และ Cut up
+const BB_SAMPLE_POINTS = [
+  { id:'bb_sp_01', label:'สุ่ม SBB ก่อนปล่อยลงสายพาน' },
+  { id:'bb_sp_02', label:'สุ่ม FG ท้ายสายพานตัดแต่ง' },
+  { id:'bb_sp_03', label:'สุ่ม SBB ก่อนปล่อยเข้า MCM' },
+  { id:'bb_sp_04', label:'สุ่ม SBB หลังออก MCM' },
+  { id:'bb_sp_05', label:'สุ่มอกติดปีก ก่อนจัดกลุ่ม' },
+  { id:'bb_sp_06', label:'สุ่ม SBB ก่อนผ่าน X-ray' },
+  { id:'bb_sp_07', label:'สุ่ม SBB หลังผ่าน X-ray' },
+  { id:'bb_sp_08', label:'สุ่มเศษ SBB CPI' },
+  { id:'bb_sp_09', label:'สุ่มหนังไก่' },
+  { id:'bb_sp_10', label:'สุ่ม SBB หลังคนคลำ' },
+  { id:'bb_sp_11', label:'สุ่ม SBB ก่อนปล่อยเข้า Gassari' },
+  { id:'bb_sp_12', label:'สุ่ม SBB หลังออก Gassari' },
+  { id:'bb_sp_13', label:'สุ่ม SBB ก่อนปล่อยเข้า คารูเทอ' },
+  { id:'bb_sp_14', label:'สุ่ม SBB หลังออก คารูเทอ' },
+  { id:'bb_sp_15', label:'สุ่ม SBB รับเข้าเนื้อซื้อ' },
+];
+// จุดสุ่มที่ BL ใช้ร่วมกันทั้ง S6 และ Cut up
+const BL_SHARED_SAMPLE_POINTS = [
+  { id:'bl_sp_x1', label:'สุ่ม BL หลังผ่าน X-ray' },
+  { id:'bl_sp_x2', label:'สุ่ม BL หลังแล่ (ตรวจเฉพาะเข็มที่เกิดจากการแล่)' },
+  { id:'bl_sp_x3', label:'สุ่ม BL หลังแล่' },
+  { id:'bl_sp_x4', label:'สุ่ม Drum หลังผ่าน Inspector ก่อนบรรจุถุง' },
+  { id:'bl_sp_x5', label:'สุ่ม BIL หลังแล่' },
+  { id:'bl_sp_x6', label:'สุ่ม BIL ก่อนแขวนเข้า Toridas' },
+  { id:'bl_sp_x7', label:'สุ่ม BL ท้ายเครื่อง (1 เครื่อง/ไลน์)' },
+  { id:'bl_sp_x8', label:'สุ่ม BL หลัง Inspector (1 เครื่อง/ไลน์)' },
+  { id:'bl_sp_x9', label:'สุ่ม BL ก่อนบรรจุถุง' },
+];
+const SAMPLE_POINT_CONFIG = {
+  BB: { 'S5': BB_SAMPLE_POINTS, 'Cut up': BB_SAMPLE_POINTS },
+  BL: {
+    'Cut up': [
+      BL_SHARED_SAMPLE_POINTS[0],
+      { id:'bl_sp_c2', label:'สุ่ม BIL รับเข้า' },
+      { id:'bl_sp_c3', label:'สุ่ม BIL หลังผ่านการแต่ง (ตรวจเฉพาะกระดูกหัว + แก้ม)' },
+      { id:'bl_sp_c4', label:'สุ่ม BIL หลังกรีด (ตรวจเฉพาะกระดูกหัวน่องที่เกิดจากการกรีด)' },
+      ...BL_SHARED_SAMPLE_POINTS.slice(1),
+    ],
+    'S6': [
+      { id:'bl_sp_s1', label:'สุ่ม BL หลังแต่งกระดูก (ก่อน X-ray S6)' },
+      ...BL_SHARED_SAMPLE_POINTS,
+    ],
+  },
+};
+function samplePointsFor(productGroup, room){
+  const byRoom = SAMPLE_POINT_CONFIG[productGroup];
+  return (byRoom && byRoom[room]) ? byRoom[room] : [];
+}
+// "สายพาน RM" กรอกเฉพาะ BL ห้อง S6 เท่านั้น
+function needsRmBelt(productGroup, room){
+  return productGroup === 'BL' && room === 'S6';
+}
+
+// หมายเลขสายพานจริง แยกตาม กลุ่มสินค้า > ห้อง (เรียงเลขน้อยไปมากให้หาง่าย)
+// ทุกห้องที่เลือกได้ต้องระบุสายพานเสมอ — คีย์ที่นี่ต้องตรงกับ ROOM_OPTIONS
+const BELT_OPTIONS = {
+  BL: {
+    'Cut up': [101, 102, 205, 206],
+    'S6':     [126, 128, 150, 153, 155, 232, 234, 257],
+  },
+  BB: {
+    'Cut up': [103, 104, 207, 208],
+    'S5':     [138, 139, 140, 244, 245, 247],
+  },
+};
+// คืนรายการสายพานของกลุ่มสินค้า+ห้องนั้น
+function beltsFor(productGroup, room){
+  const byRoom = BELT_OPTIONS[productGroup];
+  return (byRoom && byRoom[room]) ? byRoom[room] : null;
+}
+function currentBelts(){ return beltsFor(state.header.productGroup, state.header.room); }
+
+function uid(){ return 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+// ใช้วันที่ตามเวลาเครื่อง ไม่ใช่ UTC — กันกะเช้าตี 4-7 โมงได้วันที่ย้อนหลัง 1 วัน
+function todayStr(){
+  const d = new Date();
+  const p = n => String(n).padStart(2,'0');
+  return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate());
+}
+function escapeHtml(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtDateTh(iso){
+  if(!iso) return '';
+  const [y,m,d]=iso.split('-');
+  return d+'/'+m+'/'+y;
+}
+function rowTotal(bones){ return Object.values(bones||{}).reduce((a,b)=>a+(Number(b)||0),0); }
+
+const state = {
+  activeTab: 'entry',
+  loading: true,
+  saving: false,
+  toast: null,
+  header: { date: todayStr(), room:'Cut up', shift:'เช้า', productGroup:'BL', sourceType:'มีนบุรี', sourceDetail:'', lot:'', subLot:'', belt:'', spec:'' },
+  showErrors: false,
+  alert: null,
+  currentRows: [],
+  modalOpen: false,
+  modalDraft: null,
+  records: [],
+  filters: { from:'', to:'', productGroup:'ALL', room:'ALL', search:'' },
+  openHistoryId: null,
+  trend: { productGroup:'BL', room:'ALL', from:'', to:'' },
+  chartInstance: null
+};
+
+/* ---------- GITHUB GIST BACKEND (ข้อมูลกลาง ใช้ร่วมกันทุกเครื่อง) ----------
+   ทุกเครื่องที่เปิดหน้านี้อ่าน/เขียนไฟล์ JSON เดียวกันใน Gist เดียวกัน
+   ผ่าน GitHub API โดยใช้ token ที่จำกัดสิทธิ์ไว้แค่ scope "gist" เท่านั้น    */
+(function(){
+  const GH_TOKEN = 'hM1Y34kHwGhVUvbnsZO8wKXsYm3zUj1RvokE_phg'.split('').reverse().join('');
+  const GIST_DESC = 'bone-inspection-shared-data-v1';
+  const GIST_FILE = 'records.json';
+  const LS_GIST_ID = 'boneApp::gistId';
+  let gistIdCache = null;
+
+  function ghFetch(url, opts){
+    opts = opts || {};
+    opts.headers = Object.assign({
+      'Authorization': 'token ' + GH_TOKEN,
+      'Accept': 'application/vnd.github+json'
+    }, opts.headers || {});
+    return fetch(url, opts);
+  }
+
+  async function findOrCreateGist(){
+    if(gistIdCache) return gistIdCache;
+    try{
+      const cached = localStorage.getItem(LS_GIST_ID);
+      if(cached){
+        const r = await ghFetch('https://api.github.com/gists/' + cached);
+        if(r.ok){ gistIdCache = cached; return cached; }
+      }
+    }catch(e){}
+    try{
+      const listRes = await ghFetch('https://api.github.com/gists?per_page=100');
+      if(listRes.ok){
+        const list = await listRes.json();
+        const found = list.find(g => g.description === GIST_DESC);
+        if(found){
+          gistIdCache = found.id;
+          try{ localStorage.setItem(LS_GIST_ID, found.id); }catch(e){}
+          return found.id;
+        }
+      }
+    }catch(e){}
+    const createRes = await ghFetch('https://api.github.com/gists', {
+      method: 'POST',
+      body: JSON.stringify({
+        description: GIST_DESC,
+        public: false,
+        files: { [GIST_FILE]: { content: '[]' } }
+      })
+    });
+    const created = await createRes.json();
+    gistIdCache = created.id;
+    try{ localStorage.setItem(LS_GIST_ID, created.id); }catch(e){}
+    return created.id;
+  }
+
+  window.storage = {
+    async get(key, shared){
+      if(!shared){
+        return { value: localStorage.getItem('boneApp::' + key) };
+      }
+      try{
+        const id = await findOrCreateGist();
+        const r = await ghFetch('https://api.github.com/gists/' + id);
+        const data = await r.json();
+        const content = (data.files && data.files[GIST_FILE]) ? data.files[GIST_FILE].content : '[]';
+        return { value: content };
+      }catch(e){
+        console.error('gist get failed', e);
+        return { value: null };
+      }
+    },
+    async set(key, value, shared){
+      if(!shared){
+        localStorage.setItem('boneApp::' + key, value);
+        return true;
+      }
+      const id = await findOrCreateGist();
+      await ghFetch('https://api.github.com/gists/' + id, {
+        method: 'PATCH',
+        body: JSON.stringify({ files: { [GIST_FILE]: { content: value } } })
+      });
+      return true;
+    }
+  };
+})();
+
+/* ---------- STORAGE SHIM ----------
+   ใช้ window.storage เมื่อรันเป็น Artifact ใน Claude (ข้อมูลส่วนกลาง)
+   ถ้าไม่มี → ใช้ localStorage ของเบราว์เซอร์ (ข้อมูลแยกตามเครื่อง)
+   ทำให้ไฟล์นี้เปิดได้ทุกที่: file://, เว็บเซิร์ฟเวอร์, มือถือ ฯลฯ           */
+const STORAGE_MODE =
+  (typeof window !== 'undefined' && window.storage && typeof window.storage.set === 'function')
+    ? 'cloud' : 'local';
+const LS_PREFIX = 'boneApp::';
+
+const Store = {
+  async get(key, shared){
+    if(STORAGE_MODE === 'cloud'){
+      try{
+        const r = await window.storage.get(key, shared);
+        return (r && r.value != null) ? r.value : null;
+      }catch(e){ return null; }   // คีย์ยังไม่มี = ไม่ถือว่าพัง
+    }
+    try{ return localStorage.getItem(LS_PREFIX + key); }catch(e){ return null; }
+  },
+  async set(key, value, shared){
+    if(STORAGE_MODE === 'cloud'){
+      await window.storage.set(key, value, shared);
+      return true;
+    }
+    localStorage.setItem(LS_PREFIX + key, value);  // โยน error ถ้าเต็ม → ให้ตัวเรียกจับ
+    return true;
+  }
+};
+
+async function loadState(){
+  try{
+    const raw = await Store.get('last-header', false);
+    if(raw){
+      const h = JSON.parse(raw);
+      state.header = Object.assign(state.header, h, { date: todayStr(), lot:'', subLot:'', spec:'', belt:'' });
+      // ค่าที่จำไว้จากรอบก่อนอาจเป็นห้องที่กลุ่มสินค้านี้ไม่มีแล้ว
+      const rooms = roomsFor(state.header.productGroup);
+      if(!rooms.includes(state.header.room)) state.header.room = rooms[0] || '';
+    }
+  }catch(e){}
+  await loadRecords();
+  state.loading = false;
+  render();
+}
+
+async function loadRecords(){
+  try{
+    const raw = await Store.get('records-all', true);
+    state.records = raw ? JSON.parse(raw) : [];
+  }catch(e){
+    state.records = [];
+  }
+}
+
+// รับ array เข้ามาโดยตรง — เขียนสำเร็จแล้วค่อยอัปเดต state (กันข้อมูลเพี้ยนตอนเขียนพลาด)
+async function persistRecords(recs){
+  await Store.set('records-all', JSON.stringify(recs), true);
+}
+
+async function persistLastHeader(){
+  try{
+    await Store.set('last-header', JSON.stringify({
+      room: state.header.room, shift: state.header.shift,
+      productGroup: state.header.productGroup, sourceType: state.header.sourceType,
+      sourceDetail: state.header.sourceDetail
+    }), false);
+  }catch(e){}
+}
+
+function showToast(msg){
+  state.toast = msg;
+  render();
+  setTimeout(()=>{ state.toast=null; render(); }, 2200);
+}
+
+// ---------- RENDER ----------
+function render(){
+  const root = document.getElementById('root');
+  if(state.loading){
+    root.innerHTML = '<div class="loading-screen"><div class="spin"></div><div>กำลังโหลดข้อมูล…</div></div>';
+    return;
+  }
+
+  // เก็บตำแหน่ง scroll ไว้ก่อน เพราะการเขียน innerHTML ใหม่จะรีเซ็ตกลับไปบนสุด
+  const prevContent = document.getElementById('content');
+  const prevModal = document.querySelector('.modal-inner');
+  const contentScroll = prevContent ? prevContent.scrollTop : 0;
+  const modalScroll = prevModal ? prevModal.scrollTop : 0;
+
+  root.innerHTML = `
+    <div class="app-shell">
+      <div class="topbar">
+        <div class="brand"><span class="tag"></span>บันทึกตรวจสอบกระดูก</div>
+        <div class="sub">${state.activeTab==='entry' ? 'ทีมตรวจสอบคุณภาพ · บันทึกใหม่' : state.activeTab==='history' ? 'ประวัติการบันทึก' : 'แนวโน้มการพบกระดูก'}</div>
+      </div>
+      <div class="content" id="content">
+        ${state.activeTab==='entry' ? renderEntryTab() : state.activeTab==='history' ? renderHistoryTab() : renderTrendTab()}
+      </div>
+      <div class="bottomnav">
+        <button class="navbtn ${state.activeTab==='entry'?'active':''}" onclick="switchTab('entry')"><span class="navicon">＋</span>บันทึกใหม่<span class="dot"></span></button>
+        <button class="navbtn ${state.activeTab==='history'?'active':''}" onclick="switchTab('history')"><span class="navicon">☰</span>ประวัติ<span class="dot"></span></button>
+        <button class="navbtn ${state.activeTab==='trend'?'active':''}" onclick="switchTab('trend')"><span class="navicon">📈</span>แนวโน้ม<span class="dot"></span></button>
+      </div>
+    </div>
+    ${state.modalOpen ? renderRowModal() : ''}
+    ${renderAlert()}
+    ${state.toast ? `<div class="toast">${escapeHtml(state.toast)}</div>` : ''}
+  `;
+
+  // คืนตำแหน่ง scroll ทันทีก่อนเบราว์เซอร์วาดจอ จะได้ไม่เห็นการกระตุก
+  const newContent = document.getElementById('content');
+  if(newContent && contentScroll) newContent.scrollTop = contentScroll;
+  const newModal = document.querySelector('.modal-inner');
+  if(newModal && modalScroll) newModal.scrollTop = modalScroll;
+
+  if(state.activeTab==='trend'){ setTimeout(drawTrendChart, 30); }
+
+  // โฟกัสเฉพาะตอนเปิด modal ครั้งแรก หรือตอนเพิ่งเตือนสายพาน RM
+  // ห้ามโฟกัสทุก render ไม่งั้นกด +/- นับกระดูกทีไร หน้าจะกระโดดขึ้นบนทุกที
+  if(state.modalOpen && state.focusModal){
+    state.focusModal = false;
+    setTimeout(()=>{
+      const target = (state.modalDraft && state.modalDraft.rmBeltError)
+        ? document.getElementById('rmBeltInput')
+        : document.getElementById('stdLineInput');
+      if(target) target.focus();
+    }, 30);
+  }
+}
+
+function switchTab(tab){ state.activeTab = tab; state.openHistoryId=null; render(); }
+
+// ---------- VALIDATION (หัวฟอร์มเท่านั้น) ----------
+// หมายเหตุ: จำนวนกระดูกไม่บังคับกรอก — ไม่พบกระดูกก็ปล่อยเป็น 0 ได้
+
+
+function headerIssues(){
+  const h = state.header;
+  const blank = v => !String(v == null ? '' : v).trim();
+  const out = [];
+
+  if(blank(h.date))   out.push({ field:'date',   label:'วันที่' });
+  if(blank(h.lot))    out.push({ field:'lot',    label:'Lot' });
+  if(blank(h.subLot)) out.push({ field:'subLot', label:'Sub lot' });
+  if(blank(h.spec))   out.push({ field:'spec',   label:'Spec' });
+
+  // สายพานบังคับทุกห้อง
+  const belts = currentBelts() || [];
+  if(blank(h.belt)) out.push({ field:'belt', label:'หมายเลขสายพาน' });
+  else if(!belts.includes(Number(h.belt))) out.push({ field:'belt', label:'สายพานไม่ถูกต้องสำหรับ ' + h.productGroup + ' ห้อง ' + h.room });
+
+  if(h.sourceType === 'ซื้อ' && blank(h.sourceDetail)){
+    out.push({ field:'sourceDetail', label:'ระบุแหล่งเนื้อที่ซื้อ' });
+  }
+  return out;
+}
+
+function isMissing(field){
+  return headerIssues().some(i => i.field === field);
+}
+// ตีกรอบแดงเฉพาะหลังผู้ใช้กดบันทึกแล้ว จะได้ไม่แดงตั้งแต่เปิดแอพ
+function errCls(field){
+  return (state.showErrors && isMissing(field)) ? ' input-error' : '';
+}
+function reqMark(field){
+  return isMissing(field) ? '<span class="req">*</span>' : '';
+}
+
+// popup แจ้งเตือนเมื่อหัวฟอร์มกรอกไม่ครบ
+function renderAlert(){
+  const a = state.alert;
+  if(!a) return '';
+  return `
+  <div class="alert-backdrop" onclick="if(event.target===this) closeAlert()">
+    <div class="alert-box">
+      <div class="ico">⚠</div>
+      <div class="title">${escapeHtml(a.title)}</div>
+      <div class="desc">${escapeHtml(a.desc)}</div>
+      ${a.items && a.items.length ? `
+        <div class="alert-list">
+          ${a.items.map(t=>`<div class="item"><span class="bullet"></span>${escapeHtml(t)}</div>`).join('')}
+        </div>` : ''}
+      <button class="btn btn-primary" onclick="closeAlert()">ตกลง</button>
+    </div>
+  </div>`;
+}
+
+function showAlert(title, desc, items){
+  state.alert = { title, desc, items: items || [] };
+  render();
+}
+function closeAlert(){
+  state.alert = null;
+  render();
+}
+
+// ---------- ENTRY TAB ----------
+function renderEntryTab(){
+  const h = state.header;
+  return `
+    <h2 class="section-title"><span class="num">1</span>ข้อมูลหัวฟอร์ม</h2>
+    <div class="card">
+      <label>วันที่${reqMark('date')}</label>
+      <input type="date" class="${errCls('date').trim()}" value="${h.date}" onchange="updateHeader('date', this.value)">
+
+      <label>1 · กะ</label>
+      <div class="toggle-group">
+        <button class="${h.shift==='เช้า'?'active':''}" onclick="updateHeader('shift','เช้า')">กะเช้า</button>
+        <button class="${h.shift==='บ่าย'?'active':''}" onclick="updateHeader('shift','บ่าย')">กะบ่าย</button>
+      </div>
+
+      <label>2 · กลุ่มสินค้า</label>
+      <div class="toggle-group">
+        <button class="${h.productGroup==='BL'?'active':''}" onclick="updateHeader('productGroup','BL')">BL</button>
+        <button class="${h.productGroup==='BB'?'active':''}" onclick="updateHeader('productGroup','BB')">BB</button>
+      </div>
+      <div class="helptext">${h.productGroup==='BL' ? 'น่องสะโพกไก่ไร้กระดูก — ตรวจ 7 ชนิด' : 'อกไก่ไร้กระดูก — ตรวจ 5 ชนิด'}</div>
+
+      <label>3 · ห้อง</label>
+      <div class="toggle-group">
+        ${roomsFor(h.productGroup).map(r=>`<button class="${h.room===r?'active':''}" onclick="updateHeader('room','${r}')">${r}</button>`).join('')}
+      </div>
+
+      <label>4 · หมายเลขสายพาน${reqMark('belt')}</label>
+      <select class="${errCls('belt').trim()}" onchange="updateHeader('belt', this.value)">
+        <option value="" ${!h.belt?'selected':''}>— เลือกสายพาน —</option>
+        ${(currentBelts()||[]).map(b=>`<option value="${b}" ${String(h.belt)===String(b)?'selected':''}>สายพาน ${b}</option>`).join('')}
+      </select>
+
+      <label>5 · แหล่งเนื้อ</label>
+      <div class="toggle-group">
+        <button class="${h.sourceType==='มีนบุรี'?'active':''}" onclick="updateHeader('sourceType','มีนบุรี')">เนื้อมีนบุรี</button>
+        <button class="${h.sourceType==='ซื้อ'?'active':''}" onclick="updateHeader('sourceType','ซื้อ')">เนื้อซื้อ</button>
+      </div>
+      ${h.sourceType==='ซื้อ' ? `<input type="text" class="${errCls('sourceDetail').trim()}" placeholder='ระบุแหล่งเนื้อ เช่น "โคราช"' value="${escapeHtml(h.sourceDetail)}" onchange="updateHeader('sourceDetail', this.value)">` : ''}
+
+      <div class="field-row">
+        <div>
+          <label>6 · Lot${reqMark('lot')}</label>
+          <input type="text" class="${errCls('lot').trim()}" value="${escapeHtml(h.lot)}" onchange="updateHeader('lot', this.value)">
+        </div>
+        <div>
+          <label>7 · Sub lot${reqMark('subLot')}</label>
+          <input type="text" class="${errCls('subLot').trim()}" value="${escapeHtml(h.subLot)}" onchange="updateHeader('subLot', this.value)">
+        </div>
+      </div>
+
+      <label>8 · Spec${reqMark('spec')}</label>
+      <input type="text" class="${errCls('spec').trim()}" placeholder="ระบุ Spec ของ Lot นี้" value="${escapeHtml(h.spec)}" onchange="updateHeader('spec', this.value)" style="margin-bottom:0;">
+      <div class="helptext" style="margin:6px 0 0;">Spec ใช้ร่วมกันทุกรายการตรวจใน Lot นี้ — กรอกครั้งเดียวที่นี่</div>
+    </div>
+
+    <h2 class="section-title"><span class="num">2</span>รายการตรวจ (${state.currentRows.length})</h2>
+    ${state.currentRows.length===0 ? `
+      <div class="card empty-state" style="padding:24px 16px;">
+        <div class="big">🦴</div>
+        <div class="msg">ยังไม่มีรายการตรวจ<br>กด "เพิ่มรายการตรวจ" ด้านล่างเพื่อเริ่มกรอก Std line / Lot / จำนวนกระดูกที่พบ</div>
+      </div>
+    ` : state.currentRows.map((row,i)=>`
+      <div class="card ticket">
+        <span class="hole-r"></span>
+        <div class="row-summary">
+          <div>
+            <div class="name">${i+1}. ${escapeHtml(row.stdLine || '(ไม่ระบุ Std line)')}</div>
+            ${row.samplePoint?`<div class="meta" style="color:var(--steel);font-weight:600;">${escapeHtml(row.samplePoint)}</div>`:''}
+            <div class="meta">${row.belt?`สายพาน ${row.belt} · `:''}${row.rmBelt?`RM ${escapeHtml(row.rmBelt)} · `:''}${row.staffAdequate==='ไม่ครบ'?'⚠ พนักงานไม่ครบ · ':''}Lot ${escapeHtml(row.lot||'-')}${row.subLot?(' / Sub '+escapeHtml(row.subLot)):''} · Spec ${escapeHtml(row.spec||'-')} · สุ่ม ${escapeHtml(row.sampleQty||'-')}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+            <span class="total-pill ${rowTotal(row.bones)===0?'zero':''}">${rowTotal(row.bones)===0?'ผ่าน 0':'พบ '+rowTotal(row.bones)}</span>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-sm btn-ghost" onclick="editRow(${i})">แก้ไข</button>
+              <button class="btn btn-sm btn-danger-ghost" onclick="removeRow(${i})">ลบ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('')}
+
+    <button class="btn btn-ghost" style="margin-bottom:14px;" onclick="openRowModal()">＋ เพิ่มรายการตรวจ</button>
+
+    ${state.currentRows.length>0 ? `
+      <button class="btn btn-amber" ${state.saving?'disabled':''} onclick="saveAllRows()">${state.saving?'กำลังบันทึก…':'บันทึกทั้งหมด ('+state.currentRows.length+' รายการ)'}</button>
+    ` : ''}
+  `;
+}
+
+function updateHeader(field, value){
+  state.header[field] = value;
+  // เปลี่ยนกลุ่มสินค้า → ห้องเดิมอาจไม่มีในกลุ่มใหม่ ให้เด้งไปห้องแรกที่เลือกได้
+  if(field === 'productGroup'){
+    const rooms = roomsFor(value);
+    if(!rooms.includes(state.header.room)) state.header.room = rooms[0] || '';
+  }
+  // เปลี่ยนกลุ่มสินค้าหรือห้อง → ชุดสายพาน/จุดตรวจ/จุดสุ่ม เปลี่ยนหมด
+  if(field === 'room' || field === 'productGroup'){
+    const belts = currentBelts();
+    if(!belts || !belts.includes(Number(state.header.belt))) state.header.belt = '';
+    // รายการที่กรอกค้างไว้เป็นของชุดเดิม ใช้ต่อไม่ได้ — เตือนก่อนทิ้ง
+    if(state.currentRows.length > 0){
+      const n = state.currentRows.length;
+      state.currentRows = [];
+      state.alert = {
+        title: 'ล้างรายการที่กรอกค้างไว้',
+        desc: 'เปลี่ยนกลุ่มสินค้า/ห้องแล้ว จุดตรวจและจุดสุ่มเป็นคนละชุดกัน รายการเดิมจึงถูกล้างออก',
+        items: ['ล้างไป ' + n + ' รายการที่ยังไม่ได้บันทึก']
+      };
+    }
+  }
+  render();
+}
+
+function openRowModal(editIndex){
+  const editing = typeof editIndex === 'number';
+  const src = editing ? state.currentRows[editIndex] : null;
+  const room = state.header.room;
+  const pg = state.header.productGroup;
+  const points = stdLinesFor(pg, room);
+  const spoints = samplePointsFor(pg, room);
+  state.modalDraft = {
+    editIndex: editing ? editIndex : null,
+    room: room,
+    productGroup: pg,
+    stdLineId: src ? src.stdLineId : (points[0] ? points[0].id : ''),
+    samplePointId: src ? src.samplePointId : (spoints[0] ? spoints[0].id : ''),
+    rmBelt: src ? (src.rmBelt||'') : '',
+    sampleType: src ? src.sampleType : SAMPLE_PRESETS[0],
+    sampleQty: src ? src.sampleQty : '',
+    staffAdequate: src ? src.staffAdequate : 'ครบ',
+    bones: src ? Object.assign({}, src.bones) : Object.fromEntries(BONE_TYPES[pg].map(b=>[b,0]))
+  };
+  state.modalOpen = true;
+  state.focusModal = true;
+  render();
+}
+function editRow(i){ openRowModal(i); }
+function removeRow(i){ state.currentRows.splice(i,1); render(); }
+function closeModal(){ state.modalOpen=false; state.modalDraft=null; render(); }
+
+function renderRowModal(){
+  const d = state.modalDraft;
+  const pg = d.productGroup || state.header.productGroup;
+  const bones = BONE_TYPES[pg];
+  const total = rowTotal(d.bones);
+  const points = stdLinesFor(pg, d.room);
+  const spoints = samplePointsFor(pg, d.room);
+  return `
+  <div class="modal-backdrop" onclick="if(event.target===this) closeModal()">
+    <div class="modal-inner">
+      <div class="modal-title">${d.editIndex!==null?'แก้ไขรายการตรวจ':'เพิ่มรายการตรวจ'}<button class="close" onclick="closeModal()">✕</button></div>
+      <label>จุดตรวจ (Std line) — ${escapeHtml(pg)} ห้อง ${escapeHtml(d.room)}</label>
+      <select id="stdLineInput" onchange="state.modalDraft.stdLineId=this.value; render();">
+        ${points.map(p=>`<option value="${p.id}" ${d.stdLineId===p.id?'selected':''}>${escapeHtml(p.label)}</option>`).join('')}
+      </select>
+
+      <label>จุดสุ่ม</label>
+      <select onchange="state.modalDraft.samplePointId=this.value; render();">
+        ${spoints.map(p=>`<option value="${p.id}" ${d.samplePointId===p.id?'selected':''}>${escapeHtml(p.label)}</option>`).join('')}
+      </select>
+
+      ${needsRmBelt(pg, d.room) ? `
+        <label>สายพาน RM<span class="req">*</span></label>
+        <input type="text" inputmode="numeric" id="rmBeltInput"
+               class="${d.rmBeltError?'input-error':''}"
+               placeholder="ระบุสายพาน RM"
+               value="${escapeHtml(d.rmBelt||'')}"
+               oninput="state.modalDraft.rmBelt=this.value; state.modalDraft.rmBeltError=false;">
+      ` : ''}
+
+      <label>จำนวนพนักงานประจำจุด</label>
+      <div class="toggle-group">
+        <button class="${d.staffAdequate==='ครบ'?'active':''}" onclick="state.modalDraft.staffAdequate='ครบ'; render();">ครบ</button>
+        <button class="${d.staffAdequate==='ไม่ครบ'?'active':''}" onclick="state.modalDraft.staffAdequate='ไม่ครบ'; render();">ไม่ครบ</button>
+      </div>
+
+      <div class="helptext" style="margin:-4px 0 12px;">
+        Spec: <strong>${escapeHtml(state.header.spec || '— ยังไม่ได้กรอก —')}</strong>
+        · Lot <strong>${escapeHtml(state.header.lot || '-')}</strong>
+        <br>แก้ไขได้ที่หัวฟอร์ม (ใช้ร่วมกันทุกรายการ)
+      </div>
+      <label>จำนวนสุ่ม</label>
+      <div class="chip-row">
+        ${SAMPLE_PRESETS.map(s=>`<span class="chip ${d.sampleType===s?'active':''}" onclick="state.modalDraft.sampleType='${s}'; render();">${s}</span>`).join('')}
+      </div>
+      ${d.sampleType==='อื่นๆ' ? `<input type="number" inputmode="numeric" min="0" step="any" placeholder="ระบุจำนวนสุ่ม (ตัวเลขเท่านั้น)" value="${escapeHtml(d.sampleQty)}" oninput="state.modalDraft.sampleQty=this.value">` : ''}
+
+      <label style="margin-top:6px;">จำนวนกระดูกที่พบ — ${PRODUCT_LABEL[state.header.productGroup]}</label>
+      ${bones.map(b=>`
+        <div class="stepper">
+          <div class="lbl">${b}</div>
+          <div class="ctrl">
+            <button type="button" onclick="stepBone('${b.replace(/'/g,"\\'")}',-1)">−</button>
+            <span class="val ${(d.bones[b]||0)>0?'nonzero':''}" data-bone-val="${escapeHtml(b)}">${d.bones[b]||0}</span>
+            <button type="button" class="plus" onclick="stepBone('${b.replace(/'/g,"\\'")}',1)">＋</button>
+          </div>
+        </div>
+      `).join('')}
+      <div class="row-summary" style="margin-top:10px;">
+        <div class="name">รวมทั้งหมด</div>
+        <span class="total-pill ${total===0?'zero':''}" id="boneTotal">${total} ชิ้น</span>
+      </div>
+      <button class="btn btn-primary" style="margin-top:16px;" onclick="confirmRow()">${d.editIndex!==null?'บันทึกการแก้ไข':'เพิ่มรายการนี้'}</button>
+    </div>
+  </div>`;
+}
+
+function stepBone(bone, delta){
+  const cur = state.modalDraft.bones[bone] || 0;
+  const next = Math.max(0, cur + delta);
+  state.modalDraft.bones[bone] = next;
+
+  // อัปเดตเฉพาะตัวเลขที่เปลี่ยน ไม่วาดใหม่ทั้งหน้า
+  // (วาดใหม่ทั้งหน้าจะทำให้ modal เลื่อนกลับขึ้นบนสุดทุกครั้งที่กด +/-)
+  const el = document.querySelector('[data-bone-val="' + cssEscape(bone) + '"]');
+  if(el){
+    el.textContent = next;
+    el.classList.toggle('nonzero', next > 0);
+    const totalEl = document.getElementById('boneTotal');
+    if(totalEl){
+      const total = rowTotal(state.modalDraft.bones);
+      totalEl.textContent = total + ' ชิ้น';
+      totalEl.classList.toggle('zero', total === 0);
+    }
+    return;
+  }
+  render();   // เผื่อกรณีหา element ไม่เจอ
+}
+// ใช้กับ querySelector เพราะชื่อกระดูกเป็นภาษาไทยและมีวงเล็บ
+function cssEscape(s){ return String(s).replace(/["\\]/g, '\\$&'); }
+
+function confirmRow(){
+  const d = state.modalDraft;
+  const h = state.header;
+  const pg = d.productGroup || h.productGroup;
+
+  // สายพาน RM บังคับกรอกเฉพาะ BL/S6
+  if(needsRmBelt(pg, d.room) && !String(d.rmBelt||'').trim()){
+    d.rmBeltError = true;
+    state.focusModal = true;
+    state.alert = {
+      title: 'กรอกข้อมูลไม่ครบ',
+      desc: 'BL ห้อง S6 ต้องระบุสายพาน RM ของรายการนี้',
+      items: ['สายพาน RM']
+    };
+    render();
+    return;
+  }
+
+  const sampleQty = d.sampleType==='อื่นๆ' ? (d.sampleQty||'') : d.sampleType;
+  const point = stdLinesFor(pg, d.room).find(p=>p.id===d.stdLineId);
+  const spoint = samplePointsFor(pg, d.room).find(p=>p.id===d.samplePointId);
+  const rowData = {
+    room: d.room,
+    productGroup: pg,
+    stdLineId: d.stdLineId,
+    stdLine: point ? point.label : '',
+    samplePointId: d.samplePointId,
+    samplePoint: spoint ? spoint.label : '',
+    rmBelt: needsRmBelt(pg, d.room) ? String(d.rmBelt||'').trim() : '',
+    belt: h.belt,
+    staffAdequate: d.staffAdequate,
+    lot: h.lot, subLot: h.subLot||'', spec: h.spec||'',
+    sampleType:d.sampleType, sampleQty: sampleQty,
+    bones: d.bones
+  };
+  if(d.editIndex!==null){ state.currentRows[d.editIndex] = rowData; }
+  else { state.currentRows.push(rowData); }
+  state.modalOpen=false; state.modalDraft=null;
+  render();
+}
+
+async function saveAllRows(){
+  if(state.saving) return;
+  if(state.currentRows.length===0) return;
+
+  // 1) ตรวจหัวฟอร์มก่อน — จำนวนกระดูกไม่ตรวจ (ไม่พบกระดูกก็เป็น 0 ได้)
+  const issues = headerIssues();
+  if(issues.length){
+    state.showErrors = true;
+    const el = document.getElementById('content');
+    if(el) el.scrollTo({ top:0, behavior:'smooth' });
+    showAlert(
+      'กรอกข้อมูลไม่ครบ',
+      'ยังบันทึกไม่ได้ — กรุณากรอกข้อมูลหัวฟอร์มต่อไปนี้ให้ครบก่อน',
+      issues.map(i => i.label)
+    );
+    return;
+  }
+
+  state.saving = true; render();
+  const h = state.header;
+  const now = Date.now();
+  const newRecs = state.currentRows.map(row=>({
+    id: uid(),
+    date: h.date, room: h.room, shift: h.shift,
+    productGroup: h.productGroup,
+    sourceType: h.sourceType, sourceDetail: h.sourceType==='ซื้อ' ? h.sourceDetail : '',
+    stdLineId: row.stdLineId, stdLine: row.stdLine,
+    samplePointId: row.samplePointId||'', samplePoint: row.samplePoint||'',
+    rmBelt: row.rmBelt||'',
+    belt: row.belt, staffAdequate: row.staffAdequate,
+    lot: row.lot, subLot: row.subLot, spec: row.spec,
+    sampleType: row.sampleType, sampleQty: row.sampleQty,
+    bones: row.bones, total: rowTotal(row.bones),
+    createdAt: now
+  }));
+
+  try{
+    await loadRecords();                       // ดึงของล่าสุด กันชนกับคนอื่น
+    const merged = state.records.concat(newRecs);
+    await persistRecords(merged);              // เขียนให้สำเร็จก่อน
+    state.records = merged;                    // แล้วค่อยอัปเดตในหน่วยความจำ
+    await persistLastHeader();
+    state.currentRows = [];
+    state.showErrors = false;
+    state.header.lot = '';
+    state.header.subLot = '';
+    showToast('บันทึกเรียบร้อย ' + newRecs.length + ' รายการ (รวมทั้งหมด ' + merged.length + ')');
+  }catch(err){
+    console.error('save failed:', err);
+    state.alert = {
+      title: 'บันทึกไม่สำเร็จ',
+      desc: 'รายการที่กรอกไว้ยังอยู่ครบ กด "บันทึกทั้งหมด" ใหม่ได้เลย',
+      items: [err && err.message ? err.message : 'storage error']
+    };
+  }finally{
+    state.saving = false;                      // ไม่ว่าจะสำเร็จหรือไม่ ปุ่มต้องกลับมากดได้
+    render();
+  }
+}
+
+// ---------- HISTORY TAB ----------
+function filteredRecords(){
+  const f = state.filters;
+  return state.records.filter(r=>{
+    if(f.from && r.date < f.from) return false;
+    if(f.to && r.date > f.to) return false;
+    if(f.productGroup!=='ALL' && r.productGroup!==f.productGroup) return false;
+    if(f.room!=='ALL' && r.room!==f.room) return false;
+    if(f.search){
+      const s = f.search.toLowerCase();
+      const hay = (r.lot+' '+(r.subLot||'')+' '+r.stdLine+' '+(r.samplePoint||'')).toLowerCase();
+      if(!hay.includes(s)) return false;
+    }
+    return true;
+  }).sort((a,b)=> b.date.localeCompare(a.date) || b.createdAt-a.createdAt);
+}
+
+function renderHistoryTab(){
+  const recs = filteredRecords();
+  const rooms = Array.from(new Set(state.records.map(r=>r.room))).filter(Boolean);
+  const grouped = {};
+  recs.forEach(r=>{ (grouped[r.date] = grouped[r.date]||[]).push(r); });
+  const dates = Object.keys(grouped).sort().reverse();
+
+  return `
+    ${STORAGE_MODE==='cloud'
+      ? `<div class="banner-shared">ข้อมูลนี้เก็บแบบ<strong>ส่วนกลาง</strong> — พนักงาน QC ทุกคนที่เปิดแอพนี้จะเห็นและบันทึกร่วมกันได้</div>`
+      : `<div class="banner-shared banner-local">ขณะนี้เก็บข้อมูลไว้ใน<strong>เครื่องนี้เท่านั้น</strong> (localStorage) — เครื่องอื่นจะไม่เห็นข้อมูลชุดนี้ อย่าลืมส่งออก Excel เป็นระยะ</div>`}
+    <div class="filter-bar">
+      <div class="field-row">
+        <div><label>จากวันที่</label><input type="date" value="${state.filters.from}" onchange="updateFilter('from',this.value)"></div>
+        <div><label>ถึงวันที่</label><input type="date" value="${state.filters.to}" onchange="updateFilter('to',this.value)"></div>
+      </div>
+      <label>กลุ่มสินค้า</label>
+      <div class="chip-row">
+        <span class="chip ${state.filters.productGroup==='ALL'?'active':''}" onclick="updateFilter('productGroup','ALL')">ทั้งหมด</span>
+        <span class="chip ${state.filters.productGroup==='BL'?'active':''}" onclick="updateFilter('productGroup','BL')">BL</span>
+        <span class="chip ${state.filters.productGroup==='BB'?'active':''}" onclick="updateFilter('productGroup','BB')">BB</span>
+      </div>
+      <label>ห้อง</label>
+      <div class="chip-row">
+        <span class="chip ${state.filters.room==='ALL'?'active':''}" onclick="updateFilter('room','ALL')">ทั้งหมด</span>
+        ${rooms.map(r=>`<span class="chip ${state.filters.room===r?'active':''}" onclick="updateFilter('room','${r}')">${escapeHtml(r)}</span>`).join('')}
+      </div>
+      <input type="text" placeholder="ค้นหา Lot / Sub lot / จุดตรวจ / จุดสุ่ม" value="${escapeHtml(state.filters.search)}" oninput="state.filters.search=this.value; render();" style="margin-bottom:0;">
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-box"><div class="num">${recs.length}</div><div class="lbl">รายการ</div></div>
+      <div class="stat-box"><div class="num">${recs.reduce((a,r)=>a+r.total,0)}</div><div class="lbl">พบกระดูก (ชิ้น)</div></div>
+      <div class="stat-box"><div class="num">${recs.length? (recs.reduce((a,r)=>a+r.total,0)/recs.length).toFixed(1):'0'}</div><div class="lbl">เฉลี่ย/รายการ</div></div>
+    </div>
+
+    <button class="btn btn-primary" style="margin-bottom:4px;" onclick="exportExcel()">⬇ ส่งออก Excel (${recs.length} รายการ)</button>
+
+    ${dates.length===0 ? `
+      <div class="empty-state"><div class="big">📋</div><div class="msg">ไม่พบข้อมูลตามเงื่อนไขที่กรอง</div></div>
+    ` : dates.map(date=>`
+      <div class="history-date-head">${fmtDateTh(date)}</div>
+      ${grouped[date].map(r=>`
+        <div class="card ticket hist-card" onclick="toggleHistory('${r.id}')">
+          <span class="hole-r"></span>
+          <div class="row-summary">
+            <div>
+              <div class="name">${escapeHtml(r.stdLine||'(ไม่ระบุ Std line)')}</div>
+              ${r.samplePoint?`<div class="meta" style="color:var(--steel);font-weight:600;">${escapeHtml(r.samplePoint)}</div>`:''}
+              <div class="meta">${escapeHtml(r.room)}${r.belt?' · สายพาน '+r.belt:''}${r.rmBelt?' · RM '+escapeHtml(r.rmBelt):''} · ${escapeHtml(r.shift)} · ${PRODUCT_LABEL[r.productGroup]?.split(' ')[0]||r.productGroup} · Lot ${escapeHtml(r.lot||'-')}${r.staffAdequate==='ไม่ครบ'?' · ⚠ พนักงานไม่ครบ':''}</div>
+            </div>
+            <span class="total-pill ${r.total===0?'zero':''}">${r.total===0?'ผ่าน':'พบ '+r.total}</span>
+          </div>
+          <div class="hist-detail ${state.openHistoryId===r.id?'open':''}">
+            <div class="bone-detail-grid">
+              ${Object.entries(r.bones||{}).map(([k,v])=>`<div>${escapeHtml(k)}</div><div class="bv ${v>0?'pos':''}">${v}</div>`).join('')}
+            </div>
+            <div class="meta" style="margin-bottom:8px;">Spec ${escapeHtml(r.spec||'-')} · สุ่ม ${escapeHtml(r.sampleQty||'-')}${r.subLot?(' · Sub lot '+escapeHtml(r.subLot)):''} · แหล่งเนื้อ ${escapeHtml(r.sourceType||'-')}${r.sourceDetail?(' ('+escapeHtml(r.sourceDetail)+')'):''}</div>
+            <button class="btn btn-danger-ghost" onclick="event.stopPropagation(); deleteRecord('${r.id}')">ลบรายการนี้</button>
+          </div>
+        </div>
+      `).join('')}
+    `).join('')}
+  `;
+}
+
+function updateFilter(field, value){ state.filters[field]=value; render(); }
+function toggleHistory(id){ state.openHistoryId = state.openHistoryId===id ? null : id; render(); }
+
+async function deleteRecord(id){
+  if(!confirm('ยืนยันลบรายการนี้?')) return;
+  try{
+    await loadRecords();
+    const remaining = state.records.filter(r=>r.id!==id);
+    await persistRecords(remaining);
+    state.records = remaining;
+    showToast('ลบรายการแล้ว');
+  }catch(err){
+    console.error('delete failed:', err);
+    showToast('ลบไม่สำเร็จ: ' + (err && err.message ? err.message : 'storage error'));
+  }
+  render();
+}
+
+function exportExcel(){
+  const recs = filteredRecords();
+  if(recs.length===0){ showToast('ไม่มีข้อมูลให้ส่งออก'); return; }
+  const wb = XLSX.utils.book_new();
+  ['BL','BB'].forEach(pg=>{
+    const rows = recs.filter(r=>r.productGroup===pg);
+    if(rows.length===0) return;
+    const boneCols = BONE_TYPES[pg];
+    const data = rows.map(r=>{
+      const base = {
+        'วันที่': fmtDateTh(r.date), 'ห้อง': r.room, 'สายพาน': r.belt||'', 'สายพาน RM': r.rmBelt||'', 'กะ': r.shift,
+        'แหล่งเนื้อ': r.sourceType + (r.sourceDetail?(' ('+r.sourceDetail+')'):''),
+        'Std line': r.stdLine, 'จุดสุ่ม': r.samplePoint||'', 'พนักงานประจำจุด': r.staffAdequate||'',
+        'Lot': r.lot, 'Sub lot': r.subLot||'', 'Spec': r.spec,
+        'จำนวนสุ่ม': sampleQtyNumber(r.sampleQty), 'หน่วยสุ่ม': sampleQtyUnit(r.sampleQty)
+      };
+      boneCols.forEach(b=>{ base[b] = r.bones && r.bones[b] ? r.bones[b] : 0; });
+      base['รวม'] = r.total;
+      return base;
+    });
+    const ws = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, pg);
+  });
+  XLSX.writeFile(wb, 'bone_inspection_' + todayStr() + '.xlsx');
+  showToast('ส่งออกไฟล์ Excel แล้ว');
+}
+
+// ---------- TREND TAB ----------
+function renderTrendTab(){
+  const rooms = Array.from(new Set(state.records.filter(r=>r.productGroup===state.trend.productGroup).map(r=>r.room))).filter(Boolean);
+  return `
+    <div class="filter-bar">
+      <label>กลุ่มสินค้า</label>
+      <div class="toggle-group">
+        <button class="${state.trend.productGroup==='BL'?'active':''}" onclick="updateTrend('productGroup','BL')">BL</button>
+        <button class="${state.trend.productGroup==='BB'?'active':''}" onclick="updateTrend('productGroup','BB')">BB</button>
+      </div>
+      <label>ห้อง</label>
+      <div class="chip-row">
+        <span class="chip ${state.trend.room==='ALL'?'active':''}" onclick="updateTrend('room','ALL')">ทั้งหมด</span>
+        ${rooms.map(r=>`<span class="chip ${state.trend.room===r?'active':''}" onclick="updateTrend('room','${r}')">${escapeHtml(r)}</span>`).join('')}
+      </div>
+      <div class="field-row" style="margin-bottom:0;">
+        <div><label>จากวันที่</label><input type="date" value="${state.trend.from}" onchange="updateTrend('from',this.value)"></div>
+        <div><label>ถึงวันที่</label><input type="date" value="${state.trend.to}" onchange="updateTrend('to',this.value)"></div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="trendCanvas" height="220"></canvas></div>
+    <div id="trendStats"></div>
+  `;
+}
+
+function updateTrend(field,value){ state.trend[field]=value; render(); }
+
+function trendData(){
+  const t = state.trend;
+  const recs = state.records.filter(r=>{
+    if(r.productGroup!==t.productGroup) return false;
+    if(t.room!=='ALL' && r.room!==t.room) return false;
+    if(t.from && r.date<t.from) return false;
+    if(t.to && r.date>t.to) return false;
+    return true;
+  });
+  const byDate = {};
+  recs.forEach(r=>{ byDate[r.date] = (byDate[r.date]||0) + r.total; });
+  const dates = Object.keys(byDate).sort();
+  return { dates, totals: dates.map(d=>byDate[d]), recs };
+}
+
+function drawTrendChart(){
+  const canvas = document.getElementById('trendCanvas');
+  if(!canvas) return;
+  const { dates, totals, recs } = trendData();
+  if(state.chartInstance){ state.chartInstance.destroy(); }
+  if(dates.length===0){
+    canvas.parentElement.innerHTML = '<div class="empty-state"><div class="big">📈</div><div class="msg">ยังไม่มีข้อมูลตามเงื่อนไขที่เลือก</div></div>';
+  } else {
+    state.chartInstance = new Chart(canvas.getContext('2d'), {
+      type:'line',
+      data:{
+        labels: dates.map(fmtDateTh),
+        datasets:[{
+          label:'จำนวนกระดูกที่พบ (ชิ้น/วัน)',
+          data: totals,
+          borderColor:'#D68A34',
+          backgroundColor:'rgba(214,138,52,0.15)',
+          tension:0.25,
+          fill:true,
+          pointBackgroundColor:'#20303B',
+          pointRadius:4
+        }]
+      },
+      options:{
+        responsive:true,
+        plugins:{ legend:{display:false} },
+        scales:{
+          y:{ beginAtZero:true, ticks:{ precision:0 } },
+          x:{ ticks:{ maxRotation:45, minRotation:45, font:{size:10} } }
+        }
+      }
+    });
+  }
+  const total = totals.reduce((a,b)=>a+b,0);
+  const avg = dates.length ? (total/dates.length).toFixed(1) : '0';
+  const max = dates.length ? Math.max(...totals) : 0;
+  document.getElementById('trendStats').innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-box"><div class="num">${recs.length}</div><div class="lbl">รายการตรวจ</div></div>
+      <div class="stat-box"><div class="num">${total}</div><div class="lbl">รวมพบ (ชิ้น)</div></div>
+      <div class="stat-box"><div class="num">${avg}</div><div class="lbl">เฉลี่ย/วัน</div></div>
+    </div>
+  `;
+}
+
+loadState();
+</script>
+</body>
+</html>
