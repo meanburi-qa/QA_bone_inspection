@@ -769,17 +769,38 @@ const state = {
     return created.id;
   }
 
+  // เก็บข้อมูลแยกไฟล์รายเดือน (records-YYYY-MM.json) ภายใน Gist เดียวกัน
+  // แทนที่จะยัดทั้งปีไว้ไฟล์เดียว — กันไม่ให้โดน GitHub ตัดตอนไฟล์ที่เกิน ~1MB
+  // และรองรับปริมาณข้อมูลได้มากขึ้นมาก (แต่ละเดือนมีเพดานของตัวเอง ไม่ไปกองรวมกัน)
+  const MONTH_FILE_RE = /^records-\d{4}-\d{2}\.json$/;
+
   window.storage = {
     async get(key, shared){
       if(!shared){
         return { value: localStorage.getItem('boneApp::' + key) };
       }
+      if(key !== 'records-all') return { value: null };
       try{
         const id = await findOrCreateGist();
         const r = await ghFetch('https://api.github.com/gists/' + id);
         const data = await r.json();
-        const content = (data.files && data.files[GIST_FILE]) ? data.files[GIST_FILE].content : '[]';
-        return { value: content };
+        const files = data.files || {};
+        let merged = [];
+        for(const name in files){
+          if(!MONTH_FILE_RE.test(name)) continue;
+          const f = files[name];
+          let text = f.content;
+          // ไฟล์เดือนไหนใหญ่เกิน ~1MB จะถูกตัดตอนใน response ปกติ ต้องดึงฉบับเต็มจาก raw_url แทน
+          if(f.truncated && f.raw_url){
+            const rawRes = await ghFetch(f.raw_url);
+            text = await rawRes.text();
+          }
+          try{
+            const arr = JSON.parse(text || '[]');
+            if(Array.isArray(arr)) merged = merged.concat(arr);
+          }catch(e){}
+        }
+        return { value: JSON.stringify(merged) };
       }catch(e){
         console.error('gist get failed', e);
         return { value: null };
@@ -790,10 +811,22 @@ const state = {
         localStorage.setItem('boneApp::' + key, value);
         return true;
       }
+      if(key !== 'records-all') return true;
       const id = await findOrCreateGist();
+      let all = [];
+      try{ all = JSON.parse(value || '[]'); }catch(e){}
+      const byMonth = {};
+      for(const rec of all){
+        const m = (rec && typeof rec.date === 'string' && /^\d{4}-\d{2}/.test(rec.date)) ? rec.date.slice(0,7) : 'unknown';
+        (byMonth[m] = byMonth[m] || []).push(rec);
+      }
+      const filesPatch = {};
+      for(const m in byMonth){
+        filesPatch['records-' + m + '.json'] = { content: JSON.stringify(byMonth[m]) };
+      }
       await ghFetch('https://api.github.com/gists/' + id, {
         method: 'PATCH',
-        body: JSON.stringify({ files: { [GIST_FILE]: { content: value } } })
+        body: JSON.stringify({ files: filesPatch })
       });
       return true;
     }
