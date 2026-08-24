@@ -519,16 +519,28 @@
 <script>
 const BONE_TYPES = {
   BL: ['กระดูกหัว','กระดูกแก้ม','กระดูกเข็ม','กระดูกหมวกกันน็อค','กระดูกหัวน่องติดแดง','กระดูกแข็งรูตาแล่','กระดูกแตกปนเปื้อน'],
-  BB: ['กระดูกไหปลาร้า','กระดูกสามเหลี่ยม','กระดูกซี่โครง','กระดูกเอ็นข้าง','กระดูกแตก']
+  BB: ['กระดูกไหปลาร้า','กระดูกสามเหลี่ยม','กระดูกซี่โครง','กระดูกเอ็นข้าง','กระดูกแตก'],
+  SM: ['กระดูกซี่โครง','กระดูกเอ็นข้าง','กระดูกแตก']
 };
-const PRODUCT_LABEL = { BL:'BL (น่องสะโพกไก่ไร้กระดูก)', BB:'BB (อกไก่ไร้กระดูก)' };
+const PRODUCT_LABEL = { BL:'BL (น่องสะโพกไก่ไร้กระดูก)', BB:'BB (อกไก่ไร้กระดูก)', SM:'SM' };
 // ห้องที่ตรวจได้ในแต่ละกลุ่มสินค้า — BL ไม่มี S5, BB ไม่มี S6
 const ROOM_OPTIONS = {
   BL: ['Cut up', 'S6'],
   BB: ['Cut up', 'S5'],
+  SM: ['Cut up', 'S5'],
 };
 function roomsFor(productGroup){ return ROOM_OPTIONS[productGroup] || []; }
 const SAMPLE_PRESETS = ['20 ชิ้น','50 ชิ้น','2 kg','อื่นๆ'];
+// SM สุ่มตรวจครั้งละ 50 ชิ้นเท่านั้น ไม่มีตัวเลือกอื่น
+const SAMPLE_PRESETS_BY_GROUP = { SM: ['50 ชิ้น'] };
+function samplePresetsFor(productGroup){ return SAMPLE_PRESETS_BY_GROUP[productGroup] || SAMPLE_PRESETS; }
+
+// รายชื่อผู้บันทึก แยกตามกะ — ใช้ทำ dropdown ชื่อผู้บันทึก (เลือกได้เฉพาะคนในกะนั้น)
+const RECORDER_NAMES = {
+  'กะ1': ['วันทนา  เซ็นโส','มินตรา  พันธุ์กุหลาบ','นิรชา เชื้อเดช','ชนิดา เจ๊ะดี','ระตี จันทอง','อาลิษา  มะแย้ม','วณัฐณิชา เชื้อเดช'],
+  'กะ2': ['ภาวินี  ศรีวงศ์ษา','บาดารียะห์  ดอเลาะ','ทำนอง  มาธิสุทธิ์','ญาดา    ช่อเจริญรัตน์','สุรีรัตน์  สุภาใจ','วาหูดา  ยีรอหา','สกุลรัตน์  คลับคล้าย','จารุวรรณ เกษกลิ่น'],
+};
+function recorderNamesFor(shift){ return RECORDER_NAMES[shift] || []; }
 
 // จำนวนสุ่มถูกเก็บเป็นข้อความ เช่น "20 ชิ้น" / "2 kg" / "30"
 // ตอน export ต้องแยกเป็นตัวเลขล้วน เพื่อให้ Excel และ Power BI คำนวณได้
@@ -601,6 +613,11 @@ const STD_LINE_CONFIG = {
       { id:'bl_cu_14', label:'ตรวจตำหนิกระดูก' },
     ],
   },
+  SM: {
+    'Cut up': [
+      { id:'sm_cu_01', label:'Inspector 2 คน จุดตรวจสันในก่อนบรรจุถุง' },
+    ],
+  },
 };
 function stdLinesFor(productGroup, room){
   const byRoom = STD_LINE_CONFIG[productGroup];
@@ -653,6 +670,11 @@ const SAMPLE_POINT_CONFIG = {
       ...BL_SHARED_SAMPLE_POINTS,
     ],
   },
+  SM: {
+    'Cut up': [
+      { id:'sm_sp_01', label:'สายพานสันใน' },
+    ],
+  },
 };
 function samplePointsFor(productGroup, room){
   const byRoom = SAMPLE_POINT_CONFIG[productGroup];
@@ -673,6 +695,11 @@ const BELT_OPTIONS = {
   BB: {
     'Cut up': [103, 104, 207, 208],
     'S5':     [138, 139, 140, 244, 245, 247],
+  },
+  SM: {
+    'Cut up': [105, 209],
+    // TODO: รอหมายเลขสายพานห้อง S5 ของ SM จากผู้ใช้ — ใส่ว่างไว้ก่อน
+    'S5': [],
   },
 };
 // คืนรายการสายพานของกลุ่มสินค้า+ห้องนั้น
@@ -695,6 +722,23 @@ function fmtDateTh(iso){
   const [y,m,d]=iso.split('-');
   return d+'/'+m+'/'+y;
 }
+// เวลาปัจจุบัน (real time) แสดงในแถบบนของแอพ อัปเดตทุกวินาที
+function fmtNowTh(){
+  return 'เปิดใช้งานล่าสุด ' + nowTimeStr();
+}
+function nowTimeStr(){
+  const d = new Date();
+  const p = n => String(n).padStart(2,'0');
+  return p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+}
+// อัปเดตเฉพาะ text ของนาฬิกา ไม่เรียก render() ทั้งหน้า กันไม่ให้ scroll/focus กระตุกทุกวินาที
+setInterval(()=>{
+  const el = document.getElementById('liveClock');
+  if(el) el.textContent = fmtNowTh();
+  // ฟิลด์ "เวลา" ในหัวฟอร์ม ล็อกไว้ที่เวลาปัจจุบันเสมอ ผู้ใช้แก้ไขเองไม่ได้
+  const t = document.getElementById('headerTimeField');
+  if(t) t.value = nowTimeStr();
+}, 1000);
 function rowTotal(bones){ return Object.values(bones||{}).reduce((a,b)=>a+(Number(b)||0),0); }
 
 const state = {
@@ -702,7 +746,7 @@ const state = {
   loading: true,
   saving: false,
   toast: null,
-  header: { date: todayStr(), room:'Cut up', shift:'เช้า', productGroup:'BL', sourceType:'มีนบุรี', sourceDetail:'', lot:'', subLot:'', belt:'', spec:'' },
+  header: { date: todayStr(), room:'Cut up', shift:'กะ1', recorderName:'', productGroup:'BL', sourceType:'มีนบุรี', sourceDetail:'', lot:'', subLot:'', belt:'', spec:'' },
   showErrors: false,
   alert: null,
   currentRows: [],
@@ -867,7 +911,10 @@ async function loadState(){
     const raw = await Store.get('last-header', false);
     if(raw){
       const h = JSON.parse(raw);
-      state.header = Object.assign(state.header, h, { date: todayStr(), lot:'', subLot:'', spec:'', belt:'' });
+      state.header = Object.assign(state.header, h, { date: todayStr(), lot:'', subLot:'', spec:'', belt:'', recorderName:'' });
+      // ค่ากะเก่า (เช้า/บ่าย) จากก่อนอัปเดต ให้แปลงเป็น กะ1/กะ2
+      if(state.header.shift === 'เช้า') state.header.shift = 'กะ1';
+      if(state.header.shift === 'บ่าย') state.header.shift = 'กะ2';
       // ค่าที่จำไว้จากรอบก่อนอาจเป็นห้องที่กลุ่มสินค้านี้ไม่มีแล้ว
       const rooms = roomsFor(state.header.productGroup);
       if(!rooms.includes(state.header.room)) state.header.room = rooms[0] || '';
@@ -927,6 +974,7 @@ function render(){
       <div class="topbar">
         <div class="brand"><span class="tag"></span>บันทึกตรวจสอบกระดูก</div>
         <div class="sub">${state.activeTab==='entry' ? 'ทีมตรวจสอบคุณภาพ · บันทึกใหม่' : state.activeTab==='history' ? 'ประวัติการบันทึก' : 'แนวโน้มการพบกระดูก'}</div>
+        <div class="sub" id="liveClock" style="margin-top:2px;">${fmtNowTh()}</div>
       </div>
       <div class="content" id="content">
         ${state.activeTab==='entry' ? renderEntryTab() : state.activeTab==='history' ? renderHistoryTab() : renderTrendTab()}
@@ -975,6 +1023,7 @@ function headerIssues(){
   const out = [];
 
   if(blank(h.date))   out.push({ field:'date',   label:'วันที่' });
+  if(blank(h.recorderName)) out.push({ field:'recorderName', label:'ชื่อผู้บันทึก' });
   if(blank(h.lot))    out.push({ field:'lot',    label:'Lot' });
   if(blank(h.subLot)) out.push({ field:'subLot', label:'Sub lot' });
   if(blank(h.spec))   out.push({ field:'spec',   label:'Spec' });
@@ -1038,31 +1087,42 @@ function renderEntryTab(){
       <label>วันที่${reqMark('date')}</label>
       <input type="date" class="${errCls('date').trim()}" value="${h.date}" onchange="updateHeader('date', this.value)">
 
+      <label>เวลา <span style="text-transform:none;font-weight:400;color:var(--text-dim);">(เวลาปัจจุบัน — ล็อกไว้ แก้ไขไม่ได้)</span></label>
+      <input type="text" id="headerTimeField" value="${nowTimeStr()}" readonly disabled style="background:#E9EBE6;color:var(--text-dim);cursor:not-allowed;">
+
       <label>1 · กะ</label>
       <div class="toggle-group">
-        <button class="${h.shift==='เช้า'?'active':''}" onclick="updateHeader('shift','เช้า')">กะเช้า</button>
-        <button class="${h.shift==='บ่าย'?'active':''}" onclick="updateHeader('shift','บ่าย')">กะบ่าย</button>
+        <button class="${h.shift==='กะ1'?'active':''}" onclick="updateHeader('shift','กะ1')">กะ 1</button>
+        <button class="${h.shift==='กะ2'?'active':''}" onclick="updateHeader('shift','กะ2')">กะ 2</button>
       </div>
 
-      <label>2 · กลุ่มสินค้า</label>
+      <label>2 · ชื่อผู้บันทึก${reqMark('recorderName')}</label>
+      <select class="${errCls('recorderName').trim()}" onchange="updateHeader('recorderName', this.value)">
+        <option value="" ${!h.recorderName?'selected':''}>— เลือกชื่อผู้บันทึก —</option>
+        ${recorderNamesFor(h.shift).map(n=>`<option value="${escapeHtml(n)}" ${h.recorderName===n?'selected':''}>${escapeHtml(n)}</option>`).join('')}
+      </select>
+      <div class="helptext" style="margin:-6px 0 12px;">ขึ้นให้เลือกเฉพาะชื่อพนักงานที่อยู่ในกะที่เลือกไว้ด้านบน</div>
+
+      <label>3 · กลุ่มสินค้า</label>
       <div class="toggle-group">
         <button class="${h.productGroup==='BL'?'active':''}" onclick="updateHeader('productGroup','BL')">BL</button>
         <button class="${h.productGroup==='BB'?'active':''}" onclick="updateHeader('productGroup','BB')">BB</button>
+        <button class="${h.productGroup==='SM'?'active':''}" onclick="updateHeader('productGroup','SM')">SM</button>
       </div>
-      <div class="helptext">${h.productGroup==='BL' ? 'น่องสะโพกไก่ไร้กระดูก — ตรวจ 7 ชนิด' : 'อกไก่ไร้กระดูก — ตรวจ 5 ชนิด'}</div>
+      <div class="helptext">${h.productGroup==='BL' ? 'น่องสะโพกไก่ไร้กระดูก — ตรวจ 7 ชนิด' : h.productGroup==='BB' ? 'อกไก่ไร้กระดูก — ตรวจ 5 ชนิด' : 'SM — ตรวจ ' + BONE_TYPES.SM.length + ' ชนิด'}</div>
 
-      <label>3 · ห้อง</label>
+      <label>4 · ห้อง</label>
       <div class="toggle-group">
         ${roomsFor(h.productGroup).map(r=>`<button class="${h.room===r?'active':''}" onclick="updateHeader('room','${r}')">${r}</button>`).join('')}
       </div>
 
-      <label>4 · หมายเลขสายพาน${reqMark('belt')}</label>
+      <label>5 · หมายเลขสายพาน${reqMark('belt')}</label>
       <select class="${errCls('belt').trim()}" onchange="updateHeader('belt', this.value)">
         <option value="" ${!h.belt?'selected':''}>— เลือกสายพาน —</option>
         ${(currentBelts()||[]).map(b=>`<option value="${b}" ${String(h.belt)===String(b)?'selected':''}>สายพาน ${b}</option>`).join('')}
       </select>
 
-      <label>5 · แหล่งเนื้อ</label>
+      <label>6 · แหล่งเนื้อ</label>
       <div class="toggle-group">
         <button class="${h.sourceType==='มีนบุรี'?'active':''}" onclick="updateHeader('sourceType','มีนบุรี')">เนื้อมีนบุรี</button>
         <button class="${h.sourceType==='ซื้อ'?'active':''}" onclick="updateHeader('sourceType','ซื้อ')">เนื้อซื้อ</button>
@@ -1071,16 +1131,16 @@ function renderEntryTab(){
 
       <div class="field-row">
         <div>
-          <label>6 · Lot${reqMark('lot')}</label>
+          <label>7 · Lot${reqMark('lot')}</label>
           <input type="text" class="${errCls('lot').trim()}" value="${escapeHtml(h.lot)}" onchange="updateHeader('lot', this.value)">
         </div>
         <div>
-          <label>7 · Sub lot${reqMark('subLot')}</label>
+          <label>8 · Sub lot${reqMark('subLot')}</label>
           <input type="text" class="${errCls('subLot').trim()}" value="${escapeHtml(h.subLot)}" onchange="updateHeader('subLot', this.value)">
         </div>
       </div>
 
-      <label>8 · Spec${reqMark('spec')}</label>
+      <label>9 · Spec${reqMark('spec')}</label>
       <input type="text" class="${errCls('spec').trim()}" placeholder="ระบุ Spec ของ Lot นี้" value="${escapeHtml(h.spec)}" onchange="updateHeader('spec', this.value)" style="margin-bottom:0;">
       <div class="helptext" style="margin:6px 0 0;">Spec ใช้ร่วมกันทุกรายการตรวจใน Lot นี้ — กรอกครั้งเดียวที่นี่</div>
     </div>
@@ -1098,7 +1158,7 @@ function renderEntryTab(){
           <div>
             <div class="name">${i+1}. ${escapeHtml(row.stdLine || '(ไม่ระบุ Std line)')}</div>
             ${row.samplePoint?`<div class="meta" style="color:var(--steel);font-weight:600;">${escapeHtml(row.samplePoint)}</div>`:''}
-            <div class="meta">${row.belt?`สายพาน ${row.belt} · `:''}${row.rmBelt?`RM ${escapeHtml(row.rmBelt)} · `:''}${row.staffAdequate==='ไม่ครบ'?'⚠ พนักงานไม่ครบ · ':''}Lot ${escapeHtml(row.lot||'-')}${row.subLot?(' / Sub '+escapeHtml(row.subLot)):''} · Spec ${escapeHtml(row.spec||'-')} · สุ่ม ${escapeHtml(row.sampleQty||'-')}</div>
+            <div class="meta">${row.belt?`สายพาน ${row.belt} · `:''}${row.rmBelt?`RM ${escapeHtml(row.rmBelt)} · `:''}${row.staffAdequate==='ไม่ครบ'?'⚠ พนักงานไม่ครบ ('+escapeHtml(row.staffCount||'-')+' คน) · ':''}Lot ${escapeHtml(row.lot||'-')}${row.subLot?(' / Sub '+escapeHtml(row.subLot)):''} · Spec ${escapeHtml(row.spec||'-')} · สุ่ม ${escapeHtml(row.sampleQty||'-')}</div>
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
             <span class="total-pill ${rowTotal(row.bones)===0?'zero':''}">${rowTotal(row.bones)===0?'ผ่าน 0':'พบ '+rowTotal(row.bones)}</span>
@@ -1121,6 +1181,10 @@ function renderEntryTab(){
 
 function updateHeader(field, value){
   state.header[field] = value;
+  // เปลี่ยนกะ → รายชื่อผู้บันทึกเป็นคนละชุด ถ้าชื่อเดิมไม่อยู่ในกะใหม่ให้ล้างทิ้ง
+  if(field === 'shift'){
+    if(!recorderNamesFor(value).includes(state.header.recorderName)) state.header.recorderName = '';
+  }
   // เปลี่ยนกลุ่มสินค้า → ห้องเดิมอาจไม่มีในกลุ่มใหม่ ให้เด้งไปห้องแรกที่เลือกได้
   if(field === 'productGroup'){
     const rooms = roomsFor(value);
@@ -1158,9 +1222,10 @@ function openRowModal(editIndex){
     stdLineId: src ? src.stdLineId : (points[0] ? points[0].id : ''),
     samplePointId: src ? src.samplePointId : (spoints[0] ? spoints[0].id : ''),
     rmBelt: src ? (src.rmBelt||'') : '',
-    sampleType: src ? src.sampleType : SAMPLE_PRESETS[0],
+    sampleType: src ? src.sampleType : samplePresetsFor(pg)[0],
     sampleQty: src ? src.sampleQty : '',
     staffAdequate: src ? src.staffAdequate : 'ครบ',
+    staffCount: src ? (src.staffCount||'') : '',
     bones: src ? Object.assign({}, src.bones) : Object.fromEntries(BONE_TYPES[pg].map(b=>[b,0]))
   };
   state.modalOpen = true;
@@ -1203,9 +1268,17 @@ function renderRowModal(){
 
       <label>จำนวนพนักงานประจำจุด</label>
       <div class="toggle-group">
-        <button class="${d.staffAdequate==='ครบ'?'active':''}" onclick="state.modalDraft.staffAdequate='ครบ'; render();">ครบ</button>
+        <button class="${d.staffAdequate==='ครบ'?'active':''}" onclick="state.modalDraft.staffAdequate='ครบ'; state.modalDraft.staffCount=''; render();">ครบ</button>
         <button class="${d.staffAdequate==='ไม่ครบ'?'active':''}" onclick="state.modalDraft.staffAdequate='ไม่ครบ'; render();">ไม่ครบ</button>
       </div>
+      ${d.staffAdequate==='ไม่ครบ' ? `
+        <label>มีพนักงานอยู่จริงกี่คน<span class="req">*</span></label>
+        <input type="number" inputmode="numeric" min="0" step="1" id="staffCountInput"
+               class="${d.staffCountError?'input-error':''}"
+               placeholder="ระบุจำนวนคนที่อยู่จริง"
+               value="${escapeHtml(d.staffCount||'')}"
+               oninput="state.modalDraft.staffCount=this.value; state.modalDraft.staffCountError=false;">
+      ` : ''}
 
       <div class="helptext" style="margin:-4px 0 12px;">
         Spec: <strong>${escapeHtml(state.header.spec || '— ยังไม่ได้กรอก —')}</strong>
@@ -1214,7 +1287,7 @@ function renderRowModal(){
       </div>
       <label>จำนวนสุ่ม</label>
       <div class="chip-row">
-        ${SAMPLE_PRESETS.map(s=>`<span class="chip ${d.sampleType===s?'active':''}" onclick="state.modalDraft.sampleType='${s}'; render();">${s}</span>`).join('')}
+        ${samplePresetsFor(pg).map(s=>`<span class="chip ${d.sampleType===s?'active':''}" onclick="state.modalDraft.sampleType='${s}'; render();">${s}</span>`).join('')}
       </div>
       ${d.sampleType==='อื่นๆ' ? `<input type="number" inputmode="numeric" min="0" step="any" placeholder="ระบุจำนวนสุ่ม (ตัวเลขเท่านั้น)" value="${escapeHtml(d.sampleQty)}" oninput="state.modalDraft.sampleQty=this.value">` : ''}
 
@@ -1280,6 +1353,18 @@ function confirmRow(){
     return;
   }
 
+  // เลือก "ไม่ครบ" แล้วต้องระบุจำนวนคนที่อยู่จริง
+  if(d.staffAdequate==='ไม่ครบ' && !String(d.staffCount||'').trim()){
+    d.staffCountError = true;
+    state.alert = {
+      title: 'กรอกข้อมูลไม่ครบ',
+      desc: 'พนักงานประจำจุดไม่ครบ ต้องระบุจำนวนคนที่อยู่จริง',
+      items: ['จำนวนพนักงานที่อยู่จริง']
+    };
+    render();
+    return;
+  }
+
   const sampleQty = d.sampleType==='อื่นๆ' ? (d.sampleQty||'') : d.sampleType;
   const point = stdLinesFor(pg, d.room).find(p=>p.id===d.stdLineId);
   const spoint = samplePointsFor(pg, d.room).find(p=>p.id===d.samplePointId);
@@ -1293,6 +1378,7 @@ function confirmRow(){
     rmBelt: needsRmBelt(pg, d.room) ? String(d.rmBelt||'').trim() : '',
     belt: h.belt,
     staffAdequate: d.staffAdequate,
+    staffCount: d.staffAdequate==='ไม่ครบ' ? String(d.staffCount||'').trim() : '',
     lot: h.lot, subLot: h.subLot||'', spec: h.spec||'',
     sampleType:d.sampleType, sampleQty: sampleQty,
     bones: d.bones
@@ -1324,15 +1410,16 @@ async function saveAllRows(){
   state.saving = true; render();
   const h = state.header;
   const now = Date.now();
+  const nowTime = nowTimeStr();   // เวลาจริง ณ ตอนกดบันทึก — ล็อก แก้ไขเองไม่ได้
   const newRecs = state.currentRows.map(row=>({
     id: uid(),
-    date: h.date, room: h.room, shift: h.shift,
+    date: h.date, time: nowTime, room: h.room, shift: h.shift, recorderName: h.recorderName||'',
     productGroup: h.productGroup,
     sourceType: h.sourceType, sourceDetail: h.sourceType==='ซื้อ' ? h.sourceDetail : '',
     stdLineId: row.stdLineId, stdLine: row.stdLine,
     samplePointId: row.samplePointId||'', samplePoint: row.samplePoint||'',
     rmBelt: row.rmBelt||'',
-    belt: row.belt, staffAdequate: row.staffAdequate,
+    belt: row.belt, staffAdequate: row.staffAdequate, staffCount: row.staffCount||'',
     lot: row.lot, subLot: row.subLot, spec: row.spec,
     sampleType: row.sampleType, sampleQty: row.sampleQty,
     bones: row.bones, total: rowTotal(row.bones),
@@ -1429,7 +1516,7 @@ function renderHistoryTab(){
             <div>
               <div class="name">${escapeHtml(r.stdLine||'(ไม่ระบุ Std line)')}</div>
               ${r.samplePoint?`<div class="meta" style="color:var(--steel);font-weight:600;">${escapeHtml(r.samplePoint)}</div>`:''}
-              <div class="meta">${escapeHtml(r.room)}${r.belt?' · สายพาน '+r.belt:''}${r.rmBelt?' · RM '+escapeHtml(r.rmBelt):''} · ${escapeHtml(r.shift)} · ${PRODUCT_LABEL[r.productGroup]?.split(' ')[0]||r.productGroup} · Lot ${escapeHtml(r.lot||'-')}${r.staffAdequate==='ไม่ครบ'?' · ⚠ พนักงานไม่ครบ':''}</div>
+              <div class="meta">${escapeHtml(r.room)}${r.belt?' · สายพาน '+r.belt:''}${r.rmBelt?' · RM '+escapeHtml(r.rmBelt):''} · ${escapeHtml(r.shift)}${r.recorderName?' · '+escapeHtml(r.recorderName):''}${r.time?' · '+escapeHtml(r.time):''} · ${PRODUCT_LABEL[r.productGroup]?.split(' ')[0]||r.productGroup} · Lot ${escapeHtml(r.lot||'-')}${r.staffAdequate==='ไม่ครบ'?' · ⚠ พนักงานไม่ครบ ('+escapeHtml(r.staffCount||'-')+' คน)':''}</div>
             </div>
             <span class="total-pill ${r.total===0?'zero':''}">${r.total===0?'ผ่าน':'พบ '+r.total}</span>
           </div>
@@ -1474,9 +1561,11 @@ function exportExcel(){
     const boneCols = BONE_TYPES[pg];
     const data = rows.map(r=>{
       const base = {
-        'วันที่': fmtDateTh(r.date), 'ห้อง': r.room, 'สายพาน': r.belt||'', 'สายพาน RM': r.rmBelt||'', 'กะ': r.shift,
+        'วันที่': fmtDateTh(r.date), 'เวลา': r.time||'', 'ห้อง': r.room, 'สายพาน': r.belt||'', 'สายพาน RM': r.rmBelt||'', 'กะ': r.shift,
+        'ผู้บันทึก': r.recorderName||'',
         'แหล่งเนื้อ': r.sourceType + (r.sourceDetail?(' ('+r.sourceDetail+')'):''),
         'Std line': r.stdLine, 'จุดสุ่ม': r.samplePoint||'', 'พนักงานประจำจุด': r.staffAdequate||'',
+        'จำนวนคนที่อยู่จริง (ถ้าไม่ครบ)': r.staffCount||'',
         'Lot': r.lot, 'Sub lot': r.subLot||'', 'Spec': r.spec,
         'จำนวนสุ่ม': sampleQtyNumber(r.sampleQty), 'หน่วยสุ่ม': sampleQtyUnit(r.sampleQty)
       };
