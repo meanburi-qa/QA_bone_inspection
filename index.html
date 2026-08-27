@@ -27,6 +27,7 @@
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
+  html{ -webkit-text-size-adjust:100%; -moz-text-size-adjust:100%; text-size-adjust:100%; }
   body{
     background:var(--ink);
     font-family:'Inter',sans-serif;
@@ -185,6 +186,12 @@
   input:focus, select:focus, textarea:focus{
     outline:none;
     border-color:var(--steel);
+  }
+  input[type=number]{ -moz-appearance:textfield; }
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button{
+    -webkit-appearance:none;
+    margin:0;
   }
   .field-row{display:flex; gap:10px;}
   .field-row > div{flex:1;}
@@ -406,6 +413,10 @@
     z-index:100;
     box-shadow:0 8px 20px rgba(0,0,0,0.3);
   }
+  .toast.toast-success{
+    background:var(--good);
+    color:#F3F1EA;
+  }
   .loading-screen{
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     min-height:100vh; color:#B9C3C7; font-family:'IBM Plex Mono',monospace; font-size:13px; gap:10px;
@@ -418,6 +429,145 @@
   }
   @keyframes spin{ to{ transform:rotate(360deg); } }
   .chart-wrap{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:14px; margin-bottom:14px; }
+
+  /* ---- checklist table (Std line + จุดสุ่ม x ประเภทกระดูก) ---- */
+  .checklist-table-wrap{
+    overflow-x:auto;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    margin-bottom:12px;
+    background:var(--card);
+    max-height:65vh;
+  }
+  table.checklist-table{ border-collapse:collapse; width:max-content; min-width:100%; table-layout:fixed; font-size:9px; }
+  table.checklist-table th, table.checklist-table td{
+    border:1px solid var(--line);
+    padding:1px 2px;
+    vertical-align:top;
+    white-space:normal;
+    word-break:break-word;
+    overflow-wrap:break-word;
+  }
+  table.checklist-table thead th{
+    background:var(--ink);
+    color:#F3F1EA;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    position:sticky; top:0; z-index:1;
+    text-align:center;
+    font-size:8.5px;
+    line-height:1.2;
+  }
+  .cl-narrowhead{ width:22px; }
+  .cl-qtyhead{ width:44px; }
+  .cl-bonehead{ width:46px; }
+  table.checklist-table .cl-stdline{
+    white-space:normal;
+    width:60px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:8.5px;
+    background:#F6F4EE;
+  }
+  table.checklist-table .cl-sample{
+    white-space:normal;
+    width:52px;
+    color:var(--steel);
+    font-weight:600;
+    font-size:8.5px;
+  }
+  .cl-input-sm{
+    box-sizing:border-box;
+    width:100%;
+    max-width:40px;
+    padding:1px 2px;
+    margin-bottom:0;
+    font-size:9px;
+    text-align:center;
+    border-radius:3px;
+  }
+  .cl-bone-input{
+    box-sizing:border-box;
+    width:100%;
+    max-width:40px;
+    padding:1px 2px;
+    margin-bottom:0;
+    font-size:4px;
+    text-align:center;
+    border-radius:3px;
+  }
+  .cl-stepper{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:1px;
+  }
+  .cl-step-btn{
+    box-sizing:border-box;
+    width:100%;
+    max-width:40px;
+    padding:0;
+    line-height:1;
+    font-size:8px;
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--steel);
+    border-radius:3px;
+    cursor:pointer;
+  }
+  .cl-step-btn:active{ background:var(--paper); }
+  .cl-staffcount-input{
+    box-sizing:border-box;
+    width:100%;
+    max-width:40px;
+    padding:1px 2px;
+    margin-bottom:0;
+    font-size:9px;
+    text-align:center;
+    border-radius:3px;
+  }
+  .cl-fixedqty{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    color:var(--text-dim);
+    background:var(--paper);
+    padding:1px 3px;
+    border-radius:3px;
+    font-size:9px;
+  }
+  .cl-total-pill{ font-size:9px; padding:1px 3px; white-space:nowrap; }
+  .cl-staff-toggle{ margin-top:3px; margin-bottom:0; }
+  .cl-staff-toggle button{ padding:2px 3px; font-size:8px; }
+  .cl-noprod-chip{
+    margin-top:5px;
+    font-size:8px;
+    font-weight:600;
+    color:var(--text-dim);
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:5px;
+    padding:3px 4px;
+    cursor:pointer;
+    line-height:1.3;
+  }
+  .cl-noprod-chip.active{
+    background:#F3E6D2;
+    border-color:var(--amber);
+    color:var(--amber-dark);
+  }
+  tr.cl-row-noprod{ background:#F5F4F1; }
+  tr.cl-row-noprod td{ color:var(--text-dim); }
+  .cl-noprod-dash{
+    display:block;
+    text-align:center;
+    color:var(--text-dim);
+    font-size:11px;
+    font-weight:600;
+  }
+
   .helptext{ font-size:12px; color:var(--text-dim); margin:-6px 0 14px; line-height:1.5;}
   .banner-shared{
     background:#F3E6D2;
@@ -507,6 +657,32 @@
     background:var(--bad);
     flex-shrink:0;
   }
+  .alert-box .ico.confirm-ico{
+    background:#DCEADF;
+    color:var(--good);
+  }
+  .confirm-rows{
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:4px 12px;
+    margin-bottom:16px;
+    text-align:left;
+  }
+  .confirm-row{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    font-size:12.5px;
+    padding:8px 0;
+    border-bottom:1px dashed var(--line);
+    color:var(--text);
+  }
+  .confirm-row:last-child{ border-bottom:none; }
+  .confirm-row > span:first-child{ color:var(--text-dim); font-weight:600; }
+  .confirm-row > span:last-child{ font-weight:700; text-align:right; }
+  .confirm-actions{ display:flex; gap:10px; }
+  .confirm-actions .btn{ margin-bottom:0; }
   @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
   @keyframes popIn{ from{opacity:0; transform:scale(0.92) translateY(8px);} to{opacity:1; transform:none;} }
   .req{ color:var(--bad); font-weight:700; margin-left:2px; }
@@ -530,11 +706,6 @@ const ROOM_OPTIONS = {
   SM: ['Cut up', 'S5'],
 };
 function roomsFor(productGroup){ return ROOM_OPTIONS[productGroup] || []; }
-const SAMPLE_PRESETS = ['20 ชิ้น','50 ชิ้น','2 kg','อื่นๆ'];
-// SM สุ่มตรวจครั้งละ 50 ชิ้นเท่านั้น ไม่มีตัวเลือกอื่น
-const SAMPLE_PRESETS_BY_GROUP = { SM: ['50 ชิ้น'] };
-function samplePresetsFor(productGroup){ return SAMPLE_PRESETS_BY_GROUP[productGroup] || SAMPLE_PRESETS; }
-
 // รายชื่อผู้บันทึก แยกตามกะ — ใช้ทำ dropdown ชื่อผู้บันทึก (เลือกได้เฉพาะคนในกะนั้น)
 const RECORDER_NAMES = {
   'กะ1': ['วันทนา  เซ็นโส','มินตรา  พันธุ์กุหลาบ','นิรชา เชื้อเดช','ชนิดา เจ๊ะดี','ระตี จันทอง','อาลิษา  มะแย้ม','วณัฐณิชา เชื้อเดช'],
@@ -558,131 +729,118 @@ function sampleQtyUnit(v){
   return rest || 'ชิ้น';   // กรอกตัวเลขเปล่าๆ ถือว่าเป็นชิ้น
 }
 
-// ---------- จุดตรวจ (Std line) แยกตาม กลุ่มสินค้า > ห้อง ----------
-// requiresSubLot = จุดรับเข้า ต้องระบุ Sub lot เสมอ
-const STD_LINE_CONFIG = {
+// ---------- CHECKLIST: Std line + จุดสุ่ม รวมเป็นก้อนเดียว ตายตัวตาม "ฟอร์มเช็คกระดูก ผู้ช่วย QA.xlsx" ----------
+// แต่ละลำดับ (step) มี samples[] ติดมาด้วยเลย — ไม่ต้องเลือกจุดสุ่มแยกอีกรอบ
+// flags ต่อ sample: needsRmCode / needsLot / needsSpec / needsWeight
+// repeatable:true = ฟอร์มกระดาษเว้นบรรทัดว่างไว้ให้เติมได้หลายรายการ (เช่น หลาย Lot ในกะเดียว)
+// machine = ใช้เฉพาะห้อง S5 (BB) สำหรับแยกหน้าตามเครื่องจักร
+const S5_MACHINES = ['สพ แต่ง','MCM','Gassari','คารูเทอ','X-ray'];
+const STEPS_CONFIG = {
   BB: {
     'S5': [
-      { id:'bb_s5_01', label:'S5 : Inspector แต่งกระดูกหัวสายพาน 1 : 6 คน' },
-      { id:'bb_s5_02', label:'S5 : Inspector ท้ายสายพาน 2 คน (FG มีน 2, หนองจอก)' },
-      { id:'bb_s5_03', label:'MCM : Inspector แต่งกระดูกหัวเครื่อง MCM 4 คน' },
-      { id:'bb_s5_04', label:'MCM : Inspector ท้ายเครื่อง MCM 2 คน (FG มีน 2, หนองจอก)' },
-      { id:'bb_s5_05', label:'Gassari : Inspector แต่งกระดูกหัวเครื่อง Gassari 2-4 คน' },
-      { id:'bb_s5_06', label:'Gassari : Inspector ท้ายเครื่อง Gassari 2 คน (FG มีน 2, หนองจอก)' },
-      { id:'bb_s5_07', label:'คารูเทอ : Inspector ตรวจกระดูกหัวเครื่องคารูเทอ 2-4 คน' },
-      { id:'bb_s5_08', label:'คารูเทอ : Inspector ท้ายเครื่องคารูเทอ 2 คน (FG มีน 2, หนองจอก)' },
-      { id:'bb_s5_09', label:'S5 : ผลิตตรวจรับเข้าทุก Lot / รอบการรับเข้า / ทุก Supplier', requiresSubLot:true },
-      { id:'bb_s5_10', label:'S5 : Inspector แต่งกระดูกหัว X-ray 6 คน' },
-      { id:'bb_s5_11', label:'S5 : Inspector ท้าย X-ray 2 คน' },
+      { id:'bb_s5_01', machine:'สพ แต่ง', stdLine:'S5 (สพ แต่ง) : Inspector แต่งกระดูกหัวสายพาน 1 : 6 คน',
+        samples:[ { id:'a', label:'สุ่ม RM หลัง Inspector แต่งก่อนปล่อยลงสายพาน', qty:20, needsRmCode:true, needsLot:true } ] },
+      { id:'bb_s5_02', machine:'สพ แต่ง', stdLine:'S5 (สพ แต่ง) : Inspector ท้ายสายพาน 2 คน (FG มีน 2, หนองจอก)',
+        samples:[ { id:'a', label:'สุ่ม FG ท้ายสายพานตัดแต่ง — สุ่ม Spec / Lot', needsSpec:true, needsLot:true, repeatable:true } ] },
+      { id:'bb_s5_03', machine:'MCM', stdLine:'S5 (MCM) : Inspector แต่งกระดูกหัวเครื่อง MCM 4 คน',
+        samples:[ { id:'a', label:'สุ่ม SBB ก่อนปล่อยเข้า MCM', qty:20, needsRmCode:true, needsLot:true } ] },
+      { id:'bb_s5_04', machine:'MCM', stdLine:'S5 (MCM) : Inspector ท้ายเครื่อง MCM 2 คน (FG มีน 2, หนองจอก)',
+        samples:[ { id:'a', label:'สุ่ม SBB หลังออก MCM — สุ่ม Spec / Lot', needsSpec:true, needsLot:true, repeatable:true } ] },
+      { id:'bb_s5_05', machine:'Gassari', stdLine:'S5 (Gassari) : Inspector แต่งกระดูกหัวเครื่อง Gassari 2-4 คน',
+        samples:[ { id:'a', label:'สุ่ม SBB ก่อนปล่อยเข้า Gassari', qty:20, needsRmCode:true, needsLot:true } ] },
+      { id:'bb_s5_06', machine:'Gassari', stdLine:'S5 (Gassari) : Inspector ท้ายเครื่อง Gassari 2 คน (FG มีน 2, หนองจอก)',
+        samples:[ { id:'a', label:'สุ่ม SBB หลังออก Gassari', qty:20 } ] },
+      { id:'bb_s5_07', machine:'คารูเทอ', stdLine:'S5 (คารูเทอ) : Inspector ตรวจกระดูกหัวเครื่องคารูเทอ 2-4 คน',
+        samples:[ { id:'a', label:'สุ่ม SBB ก่อนปล่อยเข้า คารูเทอ', qty:20, needsRmCode:true, needsLot:true } ] },
+      { id:'bb_s5_08', machine:'คารูเทอ', stdLine:'S5 (คารูเทอ) : Inspector ท้ายเครื่องคารูเทอ 2 คน (FG มีน 2, หนองจอก)',
+        samples:[ { id:'a', label:'สุ่ม SBB หลังออก คารูเทอ — สุ่ม Spec / Lot', needsSpec:true, needsLot:true, repeatable:true } ] },
+      { id:'bb_s5_09', machine:'X-ray', stdLine:'S5 (X-ray) : ผลิตตรวจรับเข้าทุก Lot / รอบการรับเข้า',
+        samples:[ { id:'a', label:'สุ่ม SBB รับเข้าเนื้อซื้อ', needsLot:true, needsWeight:true, repeatable:true } ] },
+      { id:'bb_s5_10', machine:'X-ray', stdLine:'S5 (X-ray) : Inspector แต่งกระดูกหัว X-ray 6 คน',
+        samples:[ { id:'a', label:'สุ่ม SBB ก่อนผ่าน X-ray', qty:20, needsLot:true } ] },
+      { id:'bb_s5_11', machine:'X-ray', stdLine:'S5 (X-ray) : Inspector ท้าย X-ray 2 คน',
+        samples:[ { id:'a', label:'สุ่ม SBB หลังผ่าน X-ray — สุ่ม Spec / RM', needsSpec:true, needsRmCode:true } ] },
     ],
     'Cut up': [
-      { id:'bb_cu_01', label:'Cut up : Inspector แต่งกระดูกหลังแล่อกติดปีก 4 คน ยืนระหว่างคนแล่' },
-      { id:'bb_cu_02', label:'Cut up : Inspector ท้ายสายพาน 4 คน' },
-      { id:'bb_cu_03', label:'Cut up : Inspector หลังผ่าน X-ray 2 คน' },
-      { id:'bb_cu_04', label:'Cut up : โต๊ะคัดแยกชิ้นที่มีกระดูกออกทุกชิ้น อย่างน้อย 1 คน' },
-      { id:'bb_cu_05', label:'Cut up : Inspector ตัดติ่ง BB ออกทุกชิ้น ก่อนลอกหนัง' },
-      { id:'bb_cu_06', label:'Cut up : Inspector หลังผ่าน X-ray 4 คน คลำกระดูก (Emiry)' },
+      { id:'bb_cu_01', stdLine:'Cut up : คนแล่อกติดปีก 8 คน', samples:[] },
+      { id:'bb_cu_02', stdLine:'Cut up : Inspector แต่งกระดูกหลังแล่อกติดปีก 4 คน ยืนระหว่างคนแล่',
+        samples:[ { id:'a', label:'สุ่มอกติดปีก ก่อนจัดกลุ่ม', qty:20 } ] },
+      { id:'bb_cu_03', stdLine:'Cut up : Inspector ท้ายสายพาน 4 คน',
+        samples:[ { id:'a', label:'สุ่ม SBB ก่อนผ่าน X-ray', qty:20 } ] },
+      { id:'bb_cu_04', stdLine:'Cut up : Inspector ตรวจและแต่งกระดูกก่อนผ่าน X-ray 2 คน', samples:[] },
+      { id:'bb_cu_05', stdLine:'Cut up : Inspector หลังผ่าน X-ray 2 คน',
+        samples:[ { id:'a', label:'สุ่ม SBB หลังผ่าน X-ray', qty:20 } ] },
+      { id:'bb_cu_06', stdLine:'Cut up : Inspector หลังผ่าน X-ray 4 คน คลำกระดูก (Emiry)',
+        samples:[ { id:'a', label:'สุ่ม SBB หลังคนคลำ', qty:20 } ] },
+      { id:'bb_cu_07', stdLine:'Cut up : โต๊ะคัดแยกชิ้นที่มีกระดูกออกทุกชิ้น อย่างน้อย 1 คน',
+        samples:[ { id:'a', label:'สุ่มเศษ SBB CPI', qty:'2 kg' } ] },
+      { id:'bb_cu_08', stdLine:'Cut up : Inspector ตัดติ่ง BB ออกทุกชิ้น ก่อนลอกหนัง',
+        samples:[ { id:'a', label:'สุ่มหนังไก่', qty:'2 kg' } ] },
     ],
   },
   BL: {
     'S6': [
-      { id:'bl_s6_01', label:'ตรวจรับเข้าทุก Lot / ทุก Supplier', requiresSubLot:true },
-      { id:'bl_s6_02', label:'S6 : สายพานแต่งกระดูก นำ RM BL ขึ้นแต่งกระดูก (ตัดหาง BL)' },
-      { id:'bl_s6_03', label:'S6 : สายพานแต่งกระดูก X-ray 4 คน/เครื่อง (S6)' },
-      { id:'bl_s6_04', label:'Toridas : RM BL จากท้ายเครื่อง TORIDAS เครื่องที่ Meat rate เยอะที่สุด' },
-      { id:'bl_s6_05', label:'Toridas : Inspector ท้ายเครื่อง TORIDAS (ตัดหาง ตัดรูตาแร่ ตัดหนัง) เครื่องที่ Meat rate เยอะที่สุด' },
-      { id:'bl_s6_06', label:'Toridas : Inspector ท้ายสายพานก่อนบรรจุถุง (ก่อนผ่าน X-ray)' },
-      { id:'bl_s6_07', label:'Toridas : X-ray 4 คน/เครื่อง (Cut up)' },
-      { id:'bl_s6_08', label:'BL SCAP MEAT ออกจากการตัดแต่ง FG เท่านั้น' },
-      { id:'bl_s6_09', label:'ตรวจตำหนิกระดูก' },
+      { id:'bl_s6_01', stdLine:'S6 สายพานแต่งกระดูก : นำ RM BL ขึ้นแต่งกระดูก (ตัดหาง BL)',
+        samples:[
+          { id:'a', label:'สุ่ม BL หลังแต่งกระดูก (ก่อน X-ray S6) RM ธรรมดา', qty:20, needsRmCode:true },
+          { id:'b', label:'สุ่ม BL หลังแต่งกระดูก (ก่อน X-ray S6) RM JAPAN', qty:20, needsRmCode:true },
+        ] },
+      { id:'bl_s6_02', stdLine:'S6 สายพานแต่งกระดูก : X-ray 4 คน/เครื่อง (S6)',
+        samples:[
+          { id:'a', label:'สุ่ม BL หลังผ่าน X-ray RM ธรรมดา', qty:20, needsRmCode:true },
+          { id:'b', label:'สุ่ม BL หลังผ่าน X-ray RM JAPAN', qty:20, needsRmCode:true },
+        ] },
+      { id:'bl_s6_03', stdLine:'RM BIL เนื้อซื้อ : ตรวจรับเข้าทุก Lot',
+        samples:[ { id:'a', label:'สุ่ม BIL', qty:50, needsLot:true, repeatable:true } ] },
+      { id:'bl_s6_04', stdLine:'S6 + CUP UP แล่มือ RM3002 : แต่งกระดูกหัว+แก้ม 4-7 คน',
+        samples:[ { id:'a', label:'สุ่ม BIL หลังผ่านการแต่ง (ตรวจเฉพาะกระดูกหัว+แก้ม)', qty:20 } ] },
+      { id:'bl_s6_05', stdLine:'S6 + CUP UP แล่มือ RM3002 : พนักงานกรีด 2 คนขึ้นไป',
+        samples:[ { id:'a', label:'สุ่ม BIL หลังกรีด (ตรวจเฉพาะกระดูกหัวน่องที่เกิดจากการกรีด)', qty:20 } ] },
+      { id:'bl_s6_06', stdLine:'S6 + CUP UP แล่มือ RM3002 : พนักงานแล่ 8-15 คน',
+        samples:[ { id:'a', label:'สุ่ม BL หลังแล่ (ตรวจเฉพาะเข็มที่เกิดจากการแล่)', qty:20 } ] },
+      { id:'bl_s6_07', stdLine:'S6 + CUP UP แล่สะโพก RM3009 : พนักงานแล่ 10-20 คน',
+        samples:[ { id:'a', label:'สุ่ม BL หลังแล่', qty:20 } ] },
+      { id:'bl_s6_08', stdLine:'S6 + CUP UP แล่สะน่อง RM3010 : จัดกลุ่มแล่ 3 คน/Inspector 1 คน',
+        samples:[ { id:'a', label:'สุ่ม Drum หลังผ่าน Inspector ก่อนบรรจุถุง', qty:'20/กลุ่ม' } ] },
+      { id:'bl_s6_09', stdLine:'BL SCAP MEAT : ไม่ออกจากสายพานแต่งกระดูก ต้องออกจากการตัดแต่ง FG เท่านั้น',
+        samples:[ { id:'a', label:'สุ่ม Spec', qty:'2 kg', needsSpec:true } ] },
+      { id:'bl_s6_10', stdLine:'FG F-30077/F-30027 : ตรวจตำหนิกระดูก',
+        samples:[ { id:'a', label:'สุ่ม Spec', qty:50, needsSpec:true } ] },
     ],
     'Cut up': [
-      { id:'bl_cu_01', label:'ตรวจรับเข้าทุก Lot / ทุก Supplier', requiresSubLot:true },
-      { id:'bl_cu_02', label:'สายพานแล่มือ RM3002 : แต่งกระดูกหัว + แก้ม 4-7 คน' },
-      { id:'bl_cu_03', label:'สายพานแล่มือ RM3002 : พนักงานกรีด 2 คนขึ้นไป' },
-      { id:'bl_cu_04', label:'สายพานแล่มือ RM3002 : พนักงานแล่ 8-15 คน' },
-      { id:'bl_cu_05', label:'สายพานแล่สะโพก RM3009 : พนักงานแล่ 10-20 คน' },
-      { id:'bl_cu_06', label:'สายพานแล่น่อง RM3010 : จัดกลุ่มแล่ 3 คน / Inspector 1 คน' },
-      { id:'bl_cu_07', label:'Toridas : BIL หลังคนแล่จากราว' },
-      { id:'bl_cu_08', label:'Toridas : BIL ก่อนขึ้นราวแขวนหลังคนแต่งกระดูก' },
-      { id:'bl_cu_09', label:'Toridas : RM BL จากท้ายเครื่อง TORIDAS เครื่องที่ Meat rate เยอะที่สุด' },
-      { id:'bl_cu_10', label:'Toridas : Inspector ท้ายเครื่อง TORIDAS (ตัดหาง ตัดรูตาแร่ ตัดหนัง) เครื่องที่ Meat rate เยอะที่สุด' },
-      { id:'bl_cu_11', label:'Toridas : Inspector ท้ายสายพานก่อนบรรจุถุง (ก่อนผ่าน X-ray)' },
-      { id:'bl_cu_12', label:'Toridas : X-ray 4 คน/เครื่อง (Cut up)' },
-      { id:'bl_cu_13', label:'BL SCAP MEAT ออกจากการตัดแต่ง FG เท่านั้น' },
-      { id:'bl_cu_14', label:'ตรวจตำหนิกระดูก' },
+      { id:'bl_cu_01', stdLine:'แล่ BIL : BIL หลังคนแล่จากราว', samples:[ { id:'a', label:'สุ่ม BIL หลังแล่', qty:20 } ] },
+      { id:'bl_cu_02', stdLine:'TORIDAS : BIL ก่อนขึ้นราวแขวนหลังคนแต่งกระดูก', samples:[ { id:'a', label:'สุ่ม BIL ก่อนแล่', qty:20 } ] },
+      { id:'bl_cu_03', stdLine:'TORIDAS : RM BL จากท้ายเครื่อง TORIDAS เครื่องที่ Meat rate เยอะที่สุด',
+        samples:[ { id:'a', label:'สุ่ม BL ท้ายเครื่อง (1 เครื่อง/ไลน์)', qty:'20/เครื่อง', needsRmCode:true } ] },
+      { id:'bl_cu_04', stdLine:'TORIDAS : Inspector ท้ายเครื่อง TORIDAS (ตัดหาง ตัดรูตาแร่ ตัดหนัง)เครื่องที่ Meat rate เยอะที่สุด',
+        samples:[ { id:'a', label:'สุ่ม BL หลัง Inspector (1 เครื่อง/ไลน์)', qty:'20/เครื่อง', needsRmCode:true } ] },
+      { id:'bl_cu_05', stdLine:'TORIDAS : Inspector ท้ายสายพานก่อนบรรจุถุง (ก่อนผ่าน X-ray)',
+        samples:[
+          { id:'a', label:'สุ่ม BL ก่อนบรรจุถุง RM ธรรมดา', qty:20, needsRmCode:true },
+          { id:'b', label:'สุ่ม BL ก่อนบรรจุถุง RM JAPAN', qty:20, needsRmCode:true },
+        ] },
+      { id:'bl_cu_06', stdLine:'TORIDAS : X-ray 4 คน/เครื่อง (Cut up)',
+        samples:[
+          { id:'a', label:'สุ่ม BL หลังผ่าน X-ray RM ธรรมดา', qty:20, needsRmCode:true },
+          { id:'b', label:'สุ่ม BL หลังผ่าน X-ray RM JAPAN', qty:20, needsRmCode:true },
+        ] },
+      { id:'bl_cu_07', stdLine:'BL SCAP MEAT : ไม่ออกจากสายพานแต่งกระดูก ต้องออกจากการตัดแต่ง FG เท่านั้น',
+        samples:[ { id:'a', label:'สุ่ม Spec', qty:'2 kg', needsSpec:true } ] },
+      { id:'bl_cu_08', stdLine:'ตรวจตำหนิกระดูก', samples:[ { id:'a', label:'สุ่ม Spec', qty:50, needsSpec:true } ] },
     ],
   },
   SM: {
     'Cut up': [
-      { id:'sm_cu_01', label:'Inspector 2 คน จุดตรวจสันในก่อนบรรจุถุง' },
+      { id:'sm_cu_01', stdLine:'Inspector 2 คน จุดตรวจสันในก่อนบรรจุถุง', samples:[ { id:'a', label:'สุ่มสันใน', qty:50 } ] },
     ],
   },
 };
-function stdLinesFor(productGroup, room){
-  const byRoom = STD_LINE_CONFIG[productGroup];
+function stepsFor(productGroup, room){
+  const byRoom = STEPS_CONFIG[productGroup];
   return (byRoom && byRoom[room]) ? byRoom[room] : [];
 }
-
-// ---------- จุดสุ่ม แยกตาม กลุ่มสินค้า > ห้อง ----------
-// BB ใช้ชุดเดียวกันทั้ง S5 และ Cut up
-const BB_SAMPLE_POINTS = [
-  { id:'bb_sp_01', label:'สุ่ม SBB ก่อนปล่อยลงสายพาน' },
-  { id:'bb_sp_02', label:'สุ่ม FG ท้ายสายพานตัดแต่ง' },
-  { id:'bb_sp_03', label:'สุ่ม SBB ก่อนปล่อยเข้า MCM' },
-  { id:'bb_sp_04', label:'สุ่ม SBB หลังออก MCM' },
-  { id:'bb_sp_05', label:'สุ่มอกติดปีก ก่อนจัดกลุ่ม' },
-  { id:'bb_sp_06', label:'สุ่ม SBB ก่อนผ่าน X-ray' },
-  { id:'bb_sp_07', label:'สุ่ม SBB หลังผ่าน X-ray' },
-  { id:'bb_sp_08', label:'สุ่มเศษ SBB CPI' },
-  { id:'bb_sp_09', label:'สุ่มหนังไก่' },
-  { id:'bb_sp_10', label:'สุ่ม SBB หลังคนคลำ' },
-  { id:'bb_sp_11', label:'สุ่ม SBB ก่อนปล่อยเข้า Gassari' },
-  { id:'bb_sp_12', label:'สุ่ม SBB หลังออก Gassari' },
-  { id:'bb_sp_13', label:'สุ่ม SBB ก่อนปล่อยเข้า คารูเทอ' },
-  { id:'bb_sp_14', label:'สุ่ม SBB หลังออก คารูเทอ' },
-  { id:'bb_sp_15', label:'สุ่ม SBB รับเข้าเนื้อซื้อ' },
-];
-// จุดสุ่มที่ BL ใช้ร่วมกันทั้ง S6 และ Cut up
-const BL_SHARED_SAMPLE_POINTS = [
-  { id:'bl_sp_x1', label:'สุ่ม BL หลังผ่าน X-ray' },
-  { id:'bl_sp_x2', label:'สุ่ม BL หลังแล่ (ตรวจเฉพาะเข็มที่เกิดจากการแล่)' },
-  { id:'bl_sp_x3', label:'สุ่ม BL หลังแล่' },
-  { id:'bl_sp_x4', label:'สุ่ม Drum หลังผ่าน Inspector ก่อนบรรจุถุง' },
-  { id:'bl_sp_x5', label:'สุ่ม BIL หลังแล่' },
-  { id:'bl_sp_x6', label:'สุ่ม BIL ก่อนแขวนเข้า Toridas' },
-  { id:'bl_sp_x7', label:'สุ่ม BL ท้ายเครื่อง (1 เครื่อง/ไลน์)' },
-  { id:'bl_sp_x8', label:'สุ่ม BL หลัง Inspector (1 เครื่อง/ไลน์)' },
-  { id:'bl_sp_x9', label:'สุ่ม BL ก่อนบรรจุถุง' },
-];
-const SAMPLE_POINT_CONFIG = {
-  BB: { 'S5': BB_SAMPLE_POINTS, 'Cut up': BB_SAMPLE_POINTS },
-  BL: {
-    'Cut up': [
-      BL_SHARED_SAMPLE_POINTS[0],
-      { id:'bl_sp_c2', label:'สุ่ม BIL รับเข้า' },
-      { id:'bl_sp_c3', label:'สุ่ม BIL หลังผ่านการแต่ง (ตรวจเฉพาะกระดูกหัว + แก้ม)' },
-      { id:'bl_sp_c4', label:'สุ่ม BIL หลังกรีด (ตรวจเฉพาะกระดูกหัวน่องที่เกิดจากการกรีด)' },
-      ...BL_SHARED_SAMPLE_POINTS.slice(1),
-    ],
-    'S6': [
-      { id:'bl_sp_s1', label:'สุ่ม BL หลังแต่งกระดูก (ก่อน X-ray S6)' },
-      ...BL_SHARED_SAMPLE_POINTS,
-    ],
-  },
-  SM: {
-    'Cut up': [
-      { id:'sm_sp_01', label:'สายพานสันใน' },
-    ],
-  },
-};
-function samplePointsFor(productGroup, room){
-  const byRoom = SAMPLE_POINT_CONFIG[productGroup];
-  return (byRoom && byRoom[room]) ? byRoom[room] : [];
-}
-// "สายพาน RM" กรอกเฉพาะ BL ห้อง S6 เท่านั้น
-function needsRmBelt(productGroup, room){
-  return productGroup === 'BL' && room === 'S6';
+function slotKey(stepId, sampleId, extraIdx){
+  return stepId + '::' + sampleId + (extraIdx ? ('::x' + extraIdx) : '');
 }
 
 // หมายเลขสายพานจริง แยกตาม กลุ่มสินค้า > ห้อง (เรียงเลขน้อยไปมากให้หาง่าย)
@@ -694,10 +852,10 @@ const BELT_OPTIONS = {
   },
   BB: {
     'Cut up': [103, 104, 207, 208],
-    'S5':     [138, 139, 140, 244, 245, 247],
+    'S5':     [138, 139, 140, 141, 142, 244, 245, 247],
   },
   SM: {
-    'Cut up': [105, 209],
+    'Cut up': [110, 209],
     // TODO: รอหมายเลขสายพานห้อง S5 ของ SM จากผู้ใช้ — ใส่ว่างไว้ก่อน
     'S5': [],
   },
@@ -746,12 +904,18 @@ const state = {
   loading: true,
   saving: false,
   toast: null,
+  toastKind: 'default',
+  toastSeq: 0,
   header: { date: todayStr(), room:'Cut up', shift:'กะ1', recorderName:'', productGroup:'BL', sourceType:'มีนบุรี', sourceDetail:'', lot:'', subLot:'', belt:'', spec:'' },
   showErrors: false,
   alert: null,
-  currentRows: [],
-  modalOpen: false,
-  modalDraft: null,
+  confirmSave: null,
+  // checklist ทั้งหน้า แทนที่ modal เดิม — key: slotKey(stepId,sampleId[,extraIdx]) -> entry data
+  checklist: {},       // ค่าที่กรอกของแต่ละ slot คงที่ (ไม่ repeatable หรือ slot แรกของ repeatable)
+  checklistExtra: {},  // { [stepId::sampleId]: [ entryData, ... ] } บรรทัดที่ผู้ใช้กดเพิ่มเองสำหรับจุด repeatable
+  stepStaff: {},        // { [stepId]: {adequate, count} } จำนวนพนักงานประจำจุด ต่อขั้นตอน
+  stepNoProduction: {},  // { [stepId]: true } จุดตรวจที่วันนี้ไม่มีการผลิต — ข้าม ไม่บังคับกรอก ไม่บันทึกเป็นรายการ
+  checklistKey: '',    // productGroup+room ปัจจุบันของ state.checklist (ใช้เช็คว่าต้อง reset ไหม)
   records: [],
   filters: { from:'', to:'', productGroup:'ALL', room:'ALL', search:'' },
   openHistoryId: null,
@@ -949,10 +1113,12 @@ async function persistLastHeader(){
   }catch(e){}
 }
 
-function showToast(msg){
+function showToast(msg, kind){
+  const myId = ++state.toastSeq;
   state.toast = msg;
+  state.toastKind = kind || 'default';
   render();
-  setTimeout(()=>{ state.toast=null; render(); }, 2200);
+  setTimeout(()=>{ if(state.toastSeq===myId){ state.toast=null; state.toastKind='default'; render(); } }, 2200);
 }
 
 // ---------- RENDER ----------
@@ -985,30 +1151,16 @@ function render(){
         <button class="navbtn ${state.activeTab==='trend'?'active':''}" onclick="switchTab('trend')"><span class="navicon">📈</span>แนวโน้ม<span class="dot"></span></button>
       </div>
     </div>
-    ${state.modalOpen ? renderRowModal() : ''}
     ${renderAlert()}
-    ${state.toast ? `<div class="toast">${escapeHtml(state.toast)}</div>` : ''}
+    ${renderConfirmSave()}
+    ${state.toast ? `<div class="toast ${state.toastKind==='success'?'toast-success':''}">${state.toastKind==='success'?'✓ ':''}${escapeHtml(state.toast)}</div>` : ''}
   `;
 
   // คืนตำแหน่ง scroll ทันทีก่อนเบราว์เซอร์วาดจอ จะได้ไม่เห็นการกระตุก
   const newContent = document.getElementById('content');
   if(newContent && contentScroll) newContent.scrollTop = contentScroll;
-  const newModal = document.querySelector('.modal-inner');
-  if(newModal && modalScroll) newModal.scrollTop = modalScroll;
 
   if(state.activeTab==='trend'){ setTimeout(drawTrendChart, 30); }
-
-  // โฟกัสเฉพาะตอนเปิด modal ครั้งแรก หรือตอนเพิ่งเตือนสายพาน RM
-  // ห้ามโฟกัสทุก render ไม่งั้นกด +/- นับกระดูกทีไร หน้าจะกระโดดขึ้นบนทุกที
-  if(state.modalOpen && state.focusModal){
-    state.focusModal = false;
-    setTimeout(()=>{
-      const target = (state.modalDraft && state.modalDraft.rmBeltError)
-        ? document.getElementById('rmBeltInput')
-        : document.getElementById('stdLineInput');
-      if(target) target.focus();
-    }, 30);
-  }
 }
 
 function switchTab(tab){ state.activeTab = tab; state.openHistoryId=null; render(); }
@@ -1078,6 +1230,29 @@ function closeAlert(){
   render();
 }
 
+// ป๊อบอัพยืนยันก่อนบันทึกจริง — สรุปวันที่/กะ/ห้อง ให้เช็คก่อนกดยืนยัน
+function renderConfirmSave(){
+  const p = state.confirmSave;
+  if(!p) return '';
+  const h = p.header;
+  return `
+  <div class="alert-backdrop" onclick="if(event.target===this) cancelSaveConfirm()">
+    <div class="alert-box">
+      <div class="ico confirm-ico">✓</div>
+      <div class="title">ยืนยันบันทึก ${p.count} รายการ?</div>
+      <div class="confirm-rows">
+        <div class="confirm-row"><span>วันที่</span><span>${fmtDateTh(h.date)} · ${escapeHtml(h.shift)}</span></div>
+        <div class="confirm-row"><span>กลุ่มสินค้า / ห้อง</span><span>${PRODUCT_LABEL[h.productGroup]?.split(' ')[0]||h.productGroup} · ${escapeHtml(h.room)}</span></div>
+        <div class="confirm-row"><span>Lot / Sub lot</span><span>${escapeHtml(h.lot||'-')}${h.subLot?(' / '+escapeHtml(h.subLot)):''}</span></div>
+      </div>
+      <div class="confirm-actions">
+        <button class="btn btn-ghost" onclick="cancelSaveConfirm()">ยกเลิก</button>
+        <button class="btn btn-primary" onclick="confirmAndSave()">ยืนยันบันทึก</button>
+      </div>
+    </div>
+  </div>`;
+}
+
 // ---------- ENTRY TAB ----------
 function renderEntryTab(){
   const h = state.header;
@@ -1145,38 +1320,228 @@ function renderEntryTab(){
       <div class="helptext" style="margin:6px 0 0;">Spec ใช้ร่วมกันทุกรายการตรวจใน Lot นี้ — กรอกครั้งเดียวที่นี่</div>
     </div>
 
-    <h2 class="section-title"><span class="num">2</span>รายการตรวจ (${state.currentRows.length})</h2>
-    ${state.currentRows.length===0 ? `
+    ${renderChecklistSection()}
+  `;
+}
+
+// ---------- CHECKLIST SECTION (แทน modal เดิม) ----------
+function blankEntry(pg){
+  return { rmCode:'', lot:'', spec:'', weight:'', qty:'', bones: Object.fromEntries(BONE_TYPES[pg].map(b=>[b,0])) };
+}
+// สร้าง/รีเซ็ต checklist ให้ตรงกับ กลุ่มสินค้า+ห้อง ปัจจุบันเสมอ — เรียกทุกครั้งก่อน render/save
+function ensureChecklist(){
+  const pg = state.header.productGroup, room = state.header.room;
+  const key = pg + '::' + room;
+  if(state.checklistKey !== key){
+    state.checklist = {};
+    state.checklistExtra = {};
+    state.stepStaff = {};
+    state.stepNoProduction = {};
+    state.checklistKey = key;
+    stepsFor(pg, room).forEach(step=>{
+      (step.samples||[]).forEach(s=>{
+        state.checklist[slotKey(step.id, s.id)] = blankEntry(pg);
+      });
+    });
+  }
+}
+function getEntryByKey(key){
+  const parts = key.split('::');
+  if(parts.length === 2) return state.checklist[key];
+  const arrKey = parts[0] + '::' + parts[1];
+  const idx = parseInt(parts[2].slice(1), 10) - 1;
+  const arr = state.checklistExtra[arrKey];
+  return arr ? arr[idx] : null;
+}
+function updateSlot(key, field, value){
+  const entry = getEntryByKey(key);
+  if(entry) entry[field] = value;
+}
+function addExtraRow(stepId, sampleId, pg){
+  const arrKey = stepId + '::' + sampleId;
+  state.checklistExtra[arrKey] = state.checklistExtra[arrKey] || [];
+  state.checklistExtra[arrKey].push(blankEntry(pg));
+  render();
+}
+function removeExtraRow(stepId, sampleId, idx){
+  const arrKey = stepId + '::' + sampleId;
+  if(state.checklistExtra[arrKey]) state.checklistExtra[arrKey].splice(idx, 1);
+  render();
+}
+function getStepStaff(stepId){
+  return state.stepStaff[stepId] || (state.stepStaff[stepId] = { adequate:'ครบ', count:'' });
+}
+function setStepStaff(stepId, field, value){
+  const st = getStepStaff(stepId);
+  st[field] = value;
+  // เปลี่ยนแค่ตัวเลขจำนวนคน (พิมพ์) ไม่ต้อง render ใหม่ทั้งตาราง — กัน input หลุดโฟกัสตอนพิมพ์หลักที่ 2
+  if(field==='adequate'){
+    if(value==='ครบ') st.count='';
+    render();
+  }
+}
+function isStepNoProduction(stepId){ return !!state.stepNoProduction[stepId]; }
+function toggleStepNoProduction(stepId){
+  state.stepNoProduction[stepId] = !state.stepNoProduction[stepId];
+  render();
+}
+function entryIsEmpty(entry){
+  return !entry.rmCode && !entry.lot && !entry.spec && !String(entry.weight||'').trim()
+    && !String(entry.qty||'').trim() && rowTotal(entry.bones)===0;
+}
+
+function visibleSteps(){
+  const pg = state.header.productGroup, room = state.header.room;
+  let steps = stepsFor(pg, room);
+  if(pg==='BB' && room==='S5'){
+    if(!state.header.machine || !S5_MACHINES.includes(state.header.machine)) state.header.machine = S5_MACHINES[0];
+    steps = steps.filter(st=>st.machine===state.header.machine);
+  }
+  return steps;
+}
+function setS5Machine(m){ state.header.machine = m; render(); }
+
+function renderChecklistSection(){
+  ensureChecklist();
+  const pg = state.header.productGroup, room = state.header.room;
+  const isS5 = (pg==='BB' && room==='S5');
+  const steps = visibleSteps();
+  const bones = BONE_TYPES[pg];
+  return `
+    <h2 class="section-title"><span class="num">2</span>รายการตรวจ — ${escapeHtml(pg)} ห้อง ${escapeHtml(room)}${isS5?' · เครื่อง '+escapeHtml(state.header.machine):''}</h2>
+    ${isS5 ? `
+      <div class="chip-row" style="margin-bottom:10px;">
+        ${S5_MACHINES.map(m=>`<span class="chip ${state.header.machine===m?'active':''}" onclick="setS5Machine('${m}')">${escapeHtml(m)}</span>`).join('')}
+      </div>
+      <div class="helptext" style="margin-top:-4px;">เลือกเครื่องจักรก่อน — ระบบจะโชว์เฉพาะจุดตรวจของเครื่องนั้น และล็อกจำนวนสุ่มไว้ตามค่ามาตรฐาน</div>
+    ` : `
+      <div class="helptext" style="margin-top:-4px;">โหลดจุดตรวจ (Std line) และจุดสุ่มของห้องนี้มาให้ครบตามฟอร์มมาตรฐานแล้ว — กรอกตัวเลขในตารางแล้วกด "บันทึกทั้งหมด" ครั้งเดียวจบ</div>
+    `}
+    ${steps.length===0 ? `
       <div class="card empty-state" style="padding:24px 16px;">
         <div class="big">🦴</div>
-        <div class="msg">ยังไม่มีรายการตรวจ<br>กด "เพิ่มรายการตรวจ" ด้านล่างเพื่อเริ่มกรอก Std line / Lot / จำนวนกระดูกที่พบ</div>
+        <div class="msg">ไม่มี checklist ในระบบสำหรับตัวเลือกนี้</div>
       </div>
-    ` : state.currentRows.map((row,i)=>`
-      <div class="card ticket">
-        <span class="hole-r"></span>
-        <div class="row-summary">
-          <div>
-            <div class="name">${i+1}. ${escapeHtml(row.stdLine || '(ไม่ระบุ Std line)')}</div>
-            ${row.samplePoint?`<div class="meta" style="color:var(--steel);font-weight:600;">${escapeHtml(row.samplePoint)}</div>`:''}
-            <div class="meta">${row.belt?`สายพาน ${row.belt} · `:''}${row.rmBelt?`RM ${escapeHtml(row.rmBelt)} · `:''}${row.staffAdequate==='ไม่ครบ'?'⚠ พนักงานไม่ครบ ('+escapeHtml(row.staffCount||'-')+' คน) · ':''}Lot ${escapeHtml(row.lot||'-')}${row.subLot?(' / Sub '+escapeHtml(row.subLot)):''} · Spec ${escapeHtml(row.spec||'-')} · สุ่ม ${escapeHtml(row.sampleQty||'-')}</div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-            <span class="total-pill ${rowTotal(row.bones)===0?'zero':''}">${rowTotal(row.bones)===0?'ผ่าน 0':'พบ '+rowTotal(row.bones)}</span>
-            <div style="display:flex;gap:6px;">
-              <button class="btn btn-sm btn-ghost" onclick="editRow(${i})">แก้ไข</button>
-              <button class="btn btn-sm btn-danger-ghost" onclick="removeRow(${i})">ลบ</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `).join('')}
-
-    <button class="btn btn-ghost" style="margin-bottom:14px;" onclick="openRowModal()">＋ เพิ่มรายการตรวจ</button>
-
-    ${state.currentRows.length>0 ? `
-      <button class="btn btn-amber" ${state.saving?'disabled':''} onclick="saveAllRows()">${state.saving?'กำลังบันทึก…':'บันทึกทั้งหมด ('+state.currentRows.length+' รายการ)'}</button>
-    ` : ''}
+    ` : renderChecklistTable(steps, pg, bones, isS5)}
+    <button class="btn btn-amber" style="margin-top:12px;" ${state.saving?'disabled':''} onclick="saveAllRows()">${state.saving?'กำลังบันทึก…':'บันทึกทั้งหมด'}</button>
   `;
+}
+
+function renderChecklistTable(steps, pg, bones, isS5){
+  let rowsHtml = '';
+  steps.forEach((step, si)=>{
+    const samples = step.samples || [];
+    if(samples.length===0){
+      rowsHtml += `<tr>
+        <td>${si+1}</td>
+        <td class="cl-stdline">${escapeHtml(step.stdLine)}</td>
+        <td colspan="${2 + bones.length + 1}" style="color:var(--text-dim); font-style:italic; white-space:normal;">ไม่มีจุดสุ่มที่ต้องบันทึกตัวเลขในขั้นตอนนี้</td>
+      </tr>`;
+      return;
+    }
+    const totalRowsForStep = samples.reduce((sum,s)=>{
+      let n = 1;
+      if(s.repeatable){ n += (state.checklistExtra[step.id+'::'+s.id]||[]).length; }
+      return sum + n;
+    }, 0);
+    let usedStdCell = false;
+    samples.forEach(s=>{
+      const baseKey = slotKey(step.id, s.id);
+      const entry = state.checklist[baseKey] || (state.checklist[baseKey] = blankEntry(pg));
+      rowsHtml += renderTableRow({ step, s, entry, key: baseKey, isFirstOfStep: !usedStdCell, rowspan: totalRowsForStep, si, bones, pg, isS5, removableInfo: null });
+      usedStdCell = true;
+      if(s.repeatable){
+        const arrKey = step.id + '::' + s.id;
+        (state.checklistExtra[arrKey] || []).forEach((entry2, idx)=>{
+          const k2 = slotKey(step.id, s.id, idx+1);
+          rowsHtml += renderTableRow({ step, s, entry: entry2, key: k2, isFirstOfStep: false, rowspan: 0, si, bones, pg, isS5, removableInfo: { stepId: step.id, sampleId: s.id, idx } });
+        });
+      }
+    });
+  });
+  return `
+    <div class="checklist-table-wrap">
+      <table class="checklist-table">
+        <thead><tr>
+          <th class="cl-narrowhead">#</th><th>Std line</th><th>สุ่ม</th><th class="cl-qtyhead">จำนวน<br>สุ่ม</th>
+          ${bones.map(b=>`<th class="cl-bonehead">${escapeHtml(b)}</th>`).join('')}
+          <th class="cl-narrowhead">รวม</th>
+        </tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderTableRow({step, s, entry, key, isFirstOfStep, rowspan, si, bones, pg, isS5, removableInfo}){
+  const total = rowTotal(entry.bones);
+  const kAttr = cssEscape(key);
+  const staff = getStepStaff(step.id);
+  const noProd = isStepNoProduction(step.id);
+  const qtyCell = noProd
+    ? `<span class="cl-fixedqty cl-noprod-dash">—</span>`
+    : (s.qty!=null)
+      ? `<span class="cl-fixedqty">${escapeHtml(String(s.qty))}</span>`
+      : `<input type="text" inputmode="numeric" class="cl-input-sm" placeholder="-" value="${escapeHtml(entry.qty)}" oninput="updateSlot('${key}','qty',this.value)">`;
+  return `
+    <tr class="${noProd?'cl-row-noprod':''}">
+      ${isFirstOfStep ? `
+        <td rowspan="${rowspan}">${si+1}</td>
+        <td rowspan="${rowspan}" class="cl-stdline">
+          ${escapeHtml(step.stdLine)}
+          <div class="cl-noprod-chip ${noProd?'active':''}" onclick="toggleStepNoProduction('${step.id}')">${noProd?'☑':'☐'} วันนี้ไม่มีการผลิต</div>
+          ${noProd ? `
+            <div style="font-size:8px;color:var(--text-dim);margin-top:3px;">ข้ามจุดนี้ — ไม่บังคับกรอก ไม่นับเป็นรายการตรวจ</div>
+          ` : `
+            <div class="toggle-group cl-staff-toggle">
+              <button class="${staff.adequate==='ครบ'?'active':''}" onclick="setStepStaff('${step.id}','adequate','ครบ')">ครบ</button>
+              <button class="${staff.adequate==='ไม่ครบ'?'active':''}" onclick="setStepStaff('${step.id}','adequate','ไม่ครบ')">ไม่ครบ</button>
+            </div>
+            ${staff.adequate==='ไม่ครบ' ? `<div style="font-size:8px;color:var(--text-dim);margin-top:3px;">จำนวนที่พบ</div><input type="number" min="0" placeholder="คน" class="cl-staffcount-input" value="${escapeHtml(staff.count)}" oninput="setStepStaff('${step.id}','count',this.value)">` : ''}
+          `}
+        </td>` : ''}
+      <td class="cl-sample">${escapeHtml(s.label)}</td>
+      <td>${qtyCell}</td>
+      ${bones.map(b=>{
+        const bEsc = b.replace(/'/g,"\\'");
+        return noProd
+          ? `<td><span class="cl-noprod-dash">—</span></td>`
+          : `<td><div class="cl-stepper">
+          <button type="button" class="cl-step-btn" onclick="stepBoneInput(this,'${key}','${bEsc}',1)">▲</button>
+          <input type="number" min="0" class="cl-bone-input" value="${entry.bones[b]||0}" oninput="setSlotBoneInput('${key}','${bEsc}',this)">
+          <button type="button" class="cl-step-btn" onclick="stepBoneInput(this,'${key}','${bEsc}',-1)">▼</button>
+        </div></td>`;
+      }).join('')}
+      <td>${noProd ? `<span class="cl-noprod-dash">—</span>` : `<span class="total-pill cl-total-pill ${total===0?'zero':''}" data-slot-total="${kAttr}">${total}</span>`}</td>
+    </tr>
+  `;
+}
+function setSlotBoneInput(key, bone, el){
+  const entry = getEntryByKey(key);
+  if(!entry) return;
+  const v = Math.max(0, parseInt(el.value, 10) || 0);
+  entry.bones[bone] = v;
+  el.value = v;
+  const totalEl = document.querySelector('[data-slot-total="' + cssEscape(key) + '"]');
+  if(totalEl){
+    const total = rowTotal(entry.bones);
+    totalEl.textContent = total;
+    totalEl.classList.toggle('zero', total === 0);
+  }
+}
+function stepBoneInput(btn, key, bone, delta){
+  const entry = getEntryByKey(key);
+  if(!entry) return;
+  const v = Math.max(0, (entry.bones[bone]||0) + delta);
+  entry.bones[bone] = v;
+  const input = btn.closest('.cl-stepper').querySelector('.cl-bone-input');
+  if(input) input.value = v;
+  const totalEl = document.querySelector('[data-slot-total="' + cssEscape(key) + '"]');
+  if(totalEl){
+    const total = rowTotal(entry.bones);
+    totalEl.textContent = total;
+    totalEl.classList.toggle('zero', total === 0);
+  }
 }
 
 function updateHeader(field, value){
@@ -1185,213 +1550,49 @@ function updateHeader(field, value){
   if(field === 'shift'){
     if(!recorderNamesFor(value).includes(state.header.recorderName)) state.header.recorderName = '';
   }
+  // Lot/Sub lot ค้างไว้ให้ใช้ต่อได้เฉพาะตอนบันทึกติดต่อกันในวันเดียวกัน/กลุ่มสินค้า/ห้องเดิม
+  // พอเปลี่ยนวันที่ หรือ กลุ่มสินค้า หรือ ห้อง → ถือว่าเป็นรอบใหม่ ล้าง Lot/Sub lot อัตโนมัติ กันเผลอเอา Lot เก่าไปใช้ข้ามรอบ
+  if(field === 'date' || field === 'productGroup' || field === 'room'){
+    state.header.lot = '';
+    state.header.subLot = '';
+  }
   // เปลี่ยนกลุ่มสินค้า → ห้องเดิมอาจไม่มีในกลุ่มใหม่ ให้เด้งไปห้องแรกที่เลือกได้
   if(field === 'productGroup'){
     const rooms = roomsFor(value);
     if(!rooms.includes(state.header.room)) state.header.room = rooms[0] || '';
   }
-  // เปลี่ยนกลุ่มสินค้าหรือห้อง → ชุดสายพาน/จุดตรวจ/จุดสุ่ม เปลี่ยนหมด
+  // เปลี่ยนกลุ่มสินค้าหรือห้อง → ชุดสายพาน/checklist ทั้งชุดเปลี่ยนหมด
   if(field === 'room' || field === 'productGroup'){
     const belts = currentBelts();
     if(!belts || !belts.includes(Number(state.header.belt))) state.header.belt = '';
-    // รายการที่กรอกค้างไว้เป็นของชุดเดิม ใช้ต่อไม่ได้ — เตือนก่อนทิ้ง
-    if(state.currentRows.length > 0){
-      const n = state.currentRows.length;
-      state.currentRows = [];
+    // ถ้ากรอก checklist ของห้อง/กลุ่มสินค้าเดิมค้างไว้อยู่ → เตือนก่อนล้าง (จุดตรวจ/จุดสุ่มเป็นคนละชุดกัน ใช้ต่อไม่ได้)
+    if(checklistHasData()){
       state.alert = {
         title: 'ล้างรายการที่กรอกค้างไว้',
-        desc: 'เปลี่ยนกลุ่มสินค้า/ห้องแล้ว จุดตรวจและจุดสุ่มเป็นคนละชุดกัน รายการเดิมจึงถูกล้างออก',
-        items: ['ล้างไป ' + n + ' รายการที่ยังไม่ได้บันทึก']
+        desc: 'เปลี่ยนกลุ่มสินค้า/ห้องแล้ว checklist เป็นคนละชุดกัน ข้อมูลที่กรอกไว้ในห้องเดิมจึงถูกล้างออก (ถ้ายังไม่ได้กด "บันทึกทั้งหมด")',
+        items: []
       };
     }
+    state.checklist = {}; state.checklistExtra = {}; state.stepStaff = {}; state.stepNoProduction = {}; state.checklistKey = '';
   }
   render();
 }
 
-function openRowModal(editIndex){
-  const editing = typeof editIndex === 'number';
-  const src = editing ? state.currentRows[editIndex] : null;
-  const room = state.header.room;
-  const pg = state.header.productGroup;
-  const points = stdLinesFor(pg, room);
-  const spoints = samplePointsFor(pg, room);
-  state.modalDraft = {
-    editIndex: editing ? editIndex : null,
-    room: room,
-    productGroup: pg,
-    stdLineId: src ? src.stdLineId : (points[0] ? points[0].id : ''),
-    samplePointId: src ? src.samplePointId : (spoints[0] ? spoints[0].id : ''),
-    rmBelt: src ? (src.rmBelt||'') : '',
-    sampleType: src ? src.sampleType : samplePresetsFor(pg)[0],
-    sampleQty: src ? src.sampleQty : '',
-    staffAdequate: src ? src.staffAdequate : 'ครบ',
-    staffCount: src ? (src.staffCount||'') : '',
-    bones: src ? Object.assign({}, src.bones) : Object.fromEntries(BONE_TYPES[pg].map(b=>[b,0]))
-  };
-  state.modalOpen = true;
-  state.focusModal = true;
-  render();
-}
-function editRow(i){ openRowModal(i); }
-function removeRow(i){ state.currentRows.splice(i,1); render(); }
-function closeModal(){ state.modalOpen=false; state.modalDraft=null; render(); }
-
-function renderRowModal(){
-  const d = state.modalDraft;
-  const pg = d.productGroup || state.header.productGroup;
-  const bones = BONE_TYPES[pg];
-  const total = rowTotal(d.bones);
-  const points = stdLinesFor(pg, d.room);
-  const spoints = samplePointsFor(pg, d.room);
-  return `
-  <div class="modal-backdrop" onclick="if(event.target===this) closeModal()">
-    <div class="modal-inner">
-      <div class="modal-title">${d.editIndex!==null?'แก้ไขรายการตรวจ':'เพิ่มรายการตรวจ'}<button class="close" onclick="closeModal()">✕</button></div>
-      <label>จุดตรวจ (Std line) — ${escapeHtml(pg)} ห้อง ${escapeHtml(d.room)}</label>
-      <select id="stdLineInput" onchange="state.modalDraft.stdLineId=this.value; render();">
-        ${points.map(p=>`<option value="${p.id}" ${d.stdLineId===p.id?'selected':''}>${escapeHtml(p.label)}</option>`).join('')}
-      </select>
-
-      <label>จุดสุ่ม</label>
-      <select onchange="state.modalDraft.samplePointId=this.value; render();">
-        ${spoints.map(p=>`<option value="${p.id}" ${d.samplePointId===p.id?'selected':''}>${escapeHtml(p.label)}</option>`).join('')}
-      </select>
-
-      ${needsRmBelt(pg, d.room) ? `
-        <label>สายพาน RM<span class="req">*</span></label>
-        <input type="text" inputmode="numeric" id="rmBeltInput"
-               class="${d.rmBeltError?'input-error':''}"
-               placeholder="ระบุสายพาน RM"
-               value="${escapeHtml(d.rmBelt||'')}"
-               oninput="state.modalDraft.rmBelt=this.value; state.modalDraft.rmBeltError=false;">
-      ` : ''}
-
-      <label>จำนวนพนักงานประจำจุด</label>
-      <div class="toggle-group">
-        <button class="${d.staffAdequate==='ครบ'?'active':''}" onclick="state.modalDraft.staffAdequate='ครบ'; state.modalDraft.staffCount=''; render();">ครบ</button>
-        <button class="${d.staffAdequate==='ไม่ครบ'?'active':''}" onclick="state.modalDraft.staffAdequate='ไม่ครบ'; render();">ไม่ครบ</button>
-      </div>
-      ${d.staffAdequate==='ไม่ครบ' ? `
-        <label>มีพนักงานอยู่จริงกี่คน<span class="req">*</span></label>
-        <input type="number" inputmode="numeric" min="0" step="1" id="staffCountInput"
-               class="${d.staffCountError?'input-error':''}"
-               placeholder="ระบุจำนวนคนที่อยู่จริง"
-               value="${escapeHtml(d.staffCount||'')}"
-               oninput="state.modalDraft.staffCount=this.value; state.modalDraft.staffCountError=false;">
-      ` : ''}
-
-      <div class="helptext" style="margin:-4px 0 12px;">
-        Spec: <strong>${escapeHtml(state.header.spec || '— ยังไม่ได้กรอก —')}</strong>
-        · Lot <strong>${escapeHtml(state.header.lot || '-')}</strong>
-        <br>แก้ไขได้ที่หัวฟอร์ม (ใช้ร่วมกันทุกรายการ)
-      </div>
-      <label>จำนวนสุ่ม</label>
-      <div class="chip-row">
-        ${samplePresetsFor(pg).map(s=>`<span class="chip ${d.sampleType===s?'active':''}" onclick="state.modalDraft.sampleType='${s}'; render();">${s}</span>`).join('')}
-      </div>
-      ${d.sampleType==='อื่นๆ' ? `<input type="number" inputmode="numeric" min="0" step="any" placeholder="ระบุจำนวนสุ่ม (ตัวเลขเท่านั้น)" value="${escapeHtml(d.sampleQty)}" oninput="state.modalDraft.sampleQty=this.value">` : ''}
-
-      <label style="margin-top:6px;">จำนวนกระดูกที่พบ — ${PRODUCT_LABEL[state.header.productGroup]}</label>
-      ${bones.map(b=>`
-        <div class="stepper">
-          <div class="lbl">${b}</div>
-          <div class="ctrl">
-            <button type="button" onclick="stepBone('${b.replace(/'/g,"\\'")}',-1)">−</button>
-            <span class="val ${(d.bones[b]||0)>0?'nonzero':''}" data-bone-val="${escapeHtml(b)}">${d.bones[b]||0}</span>
-            <button type="button" class="plus" onclick="stepBone('${b.replace(/'/g,"\\'")}',1)">＋</button>
-          </div>
-        </div>
-      `).join('')}
-      <div class="row-summary" style="margin-top:10px;">
-        <div class="name">รวมทั้งหมด</div>
-        <span class="total-pill ${total===0?'zero':''}" id="boneTotal">${total} ชิ้น</span>
-      </div>
-      <button class="btn btn-primary" style="margin-top:16px;" onclick="confirmRow()">${d.editIndex!==null?'บันทึกการแก้ไข':'เพิ่มรายการนี้'}</button>
-    </div>
-  </div>`;
+function checklistHasData(){
+  const anyEntry = e => e && !entryIsEmpty(e);
+  if(Object.values(state.checklist||{}).some(anyEntry)) return true;
+  if(Object.values(state.checklistExtra||{}).some(arr => (arr||[]).some(anyEntry))) return true;
+  if(Object.values(state.stepStaff||{}).some(st => st && (st.adequate==='ไม่ครบ' || st.count))) return true;
+  if(Object.values(state.stepNoProduction||{}).some(Boolean)) return true;
+  return false;
 }
 
-function stepBone(bone, delta){
-  const cur = state.modalDraft.bones[bone] || 0;
-  const next = Math.max(0, cur + delta);
-  state.modalDraft.bones[bone] = next;
-
-  // อัปเดตเฉพาะตัวเลขที่เปลี่ยน ไม่วาดใหม่ทั้งหน้า
-  // (วาดใหม่ทั้งหน้าจะทำให้ modal เลื่อนกลับขึ้นบนสุดทุกครั้งที่กด +/-)
-  const el = document.querySelector('[data-bone-val="' + cssEscape(bone) + '"]');
-  if(el){
-    el.textContent = next;
-    el.classList.toggle('nonzero', next > 0);
-    const totalEl = document.getElementById('boneTotal');
-    if(totalEl){
-      const total = rowTotal(state.modalDraft.bones);
-      totalEl.textContent = total + ' ชิ้น';
-      totalEl.classList.toggle('zero', total === 0);
-    }
-    return;
-  }
-  render();   // เผื่อกรณีหา element ไม่เจอ
-}
-// ใช้กับ querySelector เพราะชื่อกระดูกเป็นภาษาไทยและมีวงเล็บ
+// ใช้กับ querySelector เพราะชื่อกระดูก/คีย์เป็นภาษาไทยและมีวงเล็บ/เครื่องหมายคำพูด
 function cssEscape(s){ return String(s).replace(/["\\]/g, '\\$&'); }
-
-function confirmRow(){
-  const d = state.modalDraft;
-  const h = state.header;
-  const pg = d.productGroup || h.productGroup;
-
-  // สายพาน RM บังคับกรอกเฉพาะ BL/S6
-  if(needsRmBelt(pg, d.room) && !String(d.rmBelt||'').trim()){
-    d.rmBeltError = true;
-    state.focusModal = true;
-    state.alert = {
-      title: 'กรอกข้อมูลไม่ครบ',
-      desc: 'BL ห้อง S6 ต้องระบุสายพาน RM ของรายการนี้',
-      items: ['สายพาน RM']
-    };
-    render();
-    return;
-  }
-
-  // เลือก "ไม่ครบ" แล้วต้องระบุจำนวนคนที่อยู่จริง
-  if(d.staffAdequate==='ไม่ครบ' && !String(d.staffCount||'').trim()){
-    d.staffCountError = true;
-    state.alert = {
-      title: 'กรอกข้อมูลไม่ครบ',
-      desc: 'พนักงานประจำจุดไม่ครบ ต้องระบุจำนวนคนที่อยู่จริง',
-      items: ['จำนวนพนักงานที่อยู่จริง']
-    };
-    render();
-    return;
-  }
-
-  const sampleQty = d.sampleType==='อื่นๆ' ? (d.sampleQty||'') : d.sampleType;
-  const point = stdLinesFor(pg, d.room).find(p=>p.id===d.stdLineId);
-  const spoint = samplePointsFor(pg, d.room).find(p=>p.id===d.samplePointId);
-  const rowData = {
-    room: d.room,
-    productGroup: pg,
-    stdLineId: d.stdLineId,
-    stdLine: point ? point.label : '',
-    samplePointId: d.samplePointId,
-    samplePoint: spoint ? spoint.label : '',
-    rmBelt: needsRmBelt(pg, d.room) ? String(d.rmBelt||'').trim() : '',
-    belt: h.belt,
-    staffAdequate: d.staffAdequate,
-    staffCount: d.staffAdequate==='ไม่ครบ' ? String(d.staffCount||'').trim() : '',
-    lot: h.lot, subLot: h.subLot||'', spec: h.spec||'',
-    sampleType:d.sampleType, sampleQty: sampleQty,
-    bones: d.bones
-  };
-  if(d.editIndex!==null){ state.currentRows[d.editIndex] = rowData; }
-  else { state.currentRows.push(rowData); }
-  state.modalOpen=false; state.modalDraft=null;
-  render();
-}
 
 async function saveAllRows(){
   if(state.saving) return;
-  if(state.currentRows.length===0) return;
+  ensureChecklist();
 
   // 1) ตรวจหัวฟอร์มก่อน — จำนวนกระดูกไม่ตรวจ (ไม่พบกระดูกก็เป็น 0 ได้)
   const issues = headerIssues();
@@ -1407,22 +1608,78 @@ async function saveAllRows(){
     return;
   }
 
+  // ---- รวบรวมแถวจาก checklist ที่กำลังแสดงอยู่ ----
+  // จุดปกติ (ไม่ repeatable) เก็บทุกจุดเสมอ แม้กระดูก=0 (คือผลตรวจ "ผ่าน")
+  // จุด repeatable (เช่น รับเข้า Lot) เก็บเฉพาะที่กรอกข้อมูลจริง กันแถวว่างเปล่าปนเข้ามา
+  // ห้อง S5 (BB): บันทึกเฉพาะเครื่องจักรที่กำลังเลือกอยู่ — เครื่องอื่นให้ไปเลือกแล้วบันทึกแยกรอบ
+  const pg = state.header.productGroup, room = state.header.room;
+  const steps = visibleSteps();
+  const collected = [];
+  steps.forEach(step=>{
+    if(isStepNoProduction(step.id)) return; // ข้ามจุดที่วันนี้ไม่มีการผลิต — ไม่บันทึกเป็นรายการ
+    const staff = getStepStaff(step.id);
+    (step.samples||[]).forEach(s=>{
+      const baseKey = slotKey(step.id, s.id);
+      const entry = state.checklist[baseKey] || blankEntry(pg);
+      if(!s.repeatable || !entryIsEmpty(entry)){
+        collected.push({ step, s, entry, staff });
+      }
+      if(s.repeatable){
+        const arrKey = step.id + '::' + s.id;
+        (state.checklistExtra[arrKey]||[]).forEach(entry2=>{
+          if(!entryIsEmpty(entry2)) collected.push({ step, s, entry: entry2, staff });
+        });
+      }
+    });
+  });
+
+  if(collected.length===0){
+    const allNoProd = steps.length>0 && steps.every(step=>isStepNoProduction(step.id));
+    showAlert(
+      'ยังไม่มีข้อมูล',
+      allNoProd
+        ? 'ทุกจุดตรวจถูกตั้งเป็น "ไม่มีการผลิต" ไม่มีรายการให้บันทึก'
+        : 'กรุณากรอกจำนวนสุ่ม หรือจำนวนกระดูกที่พบ อย่างน้อย 1 จุดก่อนบันทึก'
+    );
+    return;
+  }
+
+  // 2) เปิดป๊อบอัพยืนยันก่อนบันทึกจริง — สรุป วันที่/กะ/ห้อง + ยอดรวมกระดูกที่พบ ให้เช็คก่อนกดยืนยัน
+  const totalBones = collected.reduce((a,c)=>a + rowTotal(c.entry.bones), 0);
+  state.confirmSave = {
+    collected,
+    header: Object.assign({}, state.header),
+    count: collected.length,
+    totalBones
+  };
+  render();
+}
+
+function cancelSaveConfirm(){
+  state.confirmSave = null;
+  render();
+}
+
+async function confirmAndSave(){
+  const pending = state.confirmSave;
+  if(!pending || state.saving) return;
+  state.confirmSave = null;
   state.saving = true; render();
-  const h = state.header;
+  const h = pending.header;
   const now = Date.now();
   const nowTime = nowTimeStr();   // เวลาจริง ณ ตอนกดบันทึก — ล็อก แก้ไขเองไม่ได้
-  const newRecs = state.currentRows.map(row=>({
+  const newRecs = pending.collected.map(({step, s, entry, staff})=>({
     id: uid(),
     date: h.date, time: nowTime, room: h.room, shift: h.shift, recorderName: h.recorderName||'',
     productGroup: h.productGroup,
     sourceType: h.sourceType, sourceDetail: h.sourceType==='ซื้อ' ? h.sourceDetail : '',
-    stdLineId: row.stdLineId, stdLine: row.stdLine,
-    samplePointId: row.samplePointId||'', samplePoint: row.samplePoint||'',
-    rmBelt: row.rmBelt||'',
-    belt: row.belt, staffAdequate: row.staffAdequate, staffCount: row.staffCount||'',
-    lot: row.lot, subLot: row.subLot, spec: row.spec,
-    sampleType: row.sampleType, sampleQty: row.sampleQty,
-    bones: row.bones, total: rowTotal(row.bones),
+    stdLineId: step.id, stdLine: step.stdLine,
+    samplePointId: s.id, samplePoint: s.label,
+    rmBelt: entry.rmCode||'', weight: entry.weight||'',
+    belt: h.belt, staffAdequate: staff.adequate, staffCount: staff.adequate==='ไม่ครบ' ? String(staff.count||'').trim() : '',
+    lot: entry.lot || h.lot, subLot: h.subLot||'', spec: entry.spec || h.spec,
+    sampleType: '', sampleQty: String(entry.qty||'').trim() || (s.qty!=null ? String(s.qty) : ''),
+    bones: entry.bones, total: rowTotal(entry.bones),
     createdAt: now
   }));
 
@@ -1432,11 +1689,12 @@ async function saveAllRows(){
     await persistRecords(merged);              // เขียนให้สำเร็จก่อน
     state.records = merged;                    // แล้วค่อยอัปเดตในหน่วยความจำ
     await persistLastHeader();
-    state.currentRows = [];
+    // เคลียร์ checklist รอบนี้ทิ้ง พร้อมสำหรับรอบตรวจถัดไป
+    state.checklist = {}; state.checklistExtra = {}; state.stepStaff = {}; state.stepNoProduction = {}; state.checklistKey = '';
     state.showErrors = false;
-    state.header.lot = '';
-    state.header.subLot = '';
-    showToast('บันทึกเรียบร้อย ' + newRecs.length + ' รายการ (รวมทั้งหมด ' + merged.length + ')');
+    // Lot/Sub lot "ไม่" ล้างตรงนี้โดยตั้งใจ — ให้ค้างไว้ใช้ต่อได้ถ้าบันทึกติดต่อกันในวันเดียวกัน/กลุ่มสินค้า/ห้องเดิม
+    // (จะถูกล้างอัตโนมัติทันทีที่เปลี่ยนวันที่/กลุ่มสินค้า/ห้อง ดู updateHeader)
+    showToast('บันทึกเรียบร้อย ' + newRecs.length + ' รายการ (รวมทั้งหมด ' + merged.length + ')', 'success');
   }catch(err){
     console.error('save failed:', err);
     state.alert = {
@@ -1467,8 +1725,13 @@ function filteredRecords(){
   }).sort((a,b)=> b.date.localeCompare(a.date) || b.createdAt-a.createdAt);
 }
 
+const HISTORY_DEFAULT_LIMIT = 100; // ไม่เลือกช่วงวันที่ → โชว์แค่ 100 รายการล่าสุด กันเครื่องค้างเมื่อข้อมูลสะสมเยอะ
+
 function renderHistoryTab(){
-  const recs = filteredRecords();
+  const allRecs = filteredRecords();
+  const hasDateFilter = !!(state.filters.from || state.filters.to);
+  const recs = hasDateFilter ? allRecs : allRecs.slice(0, HISTORY_DEFAULT_LIMIT);
+  const isCapped = !hasDateFilter && allRecs.length > HISTORY_DEFAULT_LIMIT;
   const rooms = Array.from(new Set(state.records.map(r=>r.room))).filter(Boolean);
   const grouped = {};
   recs.forEach(r=>{ (grouped[r.date] = grouped[r.date]||[]).push(r); });
@@ -1498,12 +1761,13 @@ function renderHistoryTab(){
     </div>
 
     <div class="stat-grid">
-      <div class="stat-box"><div class="num">${recs.length}</div><div class="lbl">รายการ</div></div>
-      <div class="stat-box"><div class="num">${recs.reduce((a,r)=>a+r.total,0)}</div><div class="lbl">พบกระดูก (ชิ้น)</div></div>
-      <div class="stat-box"><div class="num">${recs.length? (recs.reduce((a,r)=>a+r.total,0)/recs.length).toFixed(1):'0'}</div><div class="lbl">เฉลี่ย/รายการ</div></div>
+      <div class="stat-box"><div class="num">${allRecs.length}</div><div class="lbl">รายการ</div></div>
+      <div class="stat-box"><div class="num">${allRecs.reduce((a,r)=>a+r.total,0)}</div><div class="lbl">พบกระดูก (ชิ้น)</div></div>
+      <div class="stat-box"><div class="num">${allRecs.length? (allRecs.reduce((a,r)=>a+r.total,0)/allRecs.length).toFixed(1):'0'}</div><div class="lbl">เฉลี่ย/รายการ</div></div>
     </div>
 
-    <button class="btn btn-primary" style="margin-bottom:4px;" onclick="exportExcel()">⬇ ส่งออก Excel (${recs.length} รายการ)</button>
+    <button class="btn btn-primary" style="margin-bottom:4px;" onclick="exportExcel()">⬇ ส่งออก Excel (${allRecs.length} รายการ)</button>
+    ${isCapped ? `<div class="helptext" style="margin:6px 0 10px;">แสดง ${HISTORY_DEFAULT_LIMIT} รายการล่าสุดจากทั้งหมด ${allRecs.length} รายการที่ตรงเงื่อนไข — เลือกช่วง "จากวันที่ / ถึงวันที่" ด้านบนเพื่อดึงข้อมูลเก่ากว่านี้มาดูทั้งหมด (เหมือนตอนส่งออก Excel)</div>` : ''}
 
     ${dates.length===0 ? `
       <div class="empty-state"><div class="big">📋</div><div class="msg">ไม่พบข้อมูลตามเงื่อนไขที่กรอง</div></div>
@@ -1524,7 +1788,7 @@ function renderHistoryTab(){
             <div class="bone-detail-grid">
               ${Object.entries(r.bones||{}).map(([k,v])=>`<div>${escapeHtml(k)}</div><div class="bv ${v>0?'pos':''}">${v}</div>`).join('')}
             </div>
-            <div class="meta" style="margin-bottom:8px;">Spec ${escapeHtml(r.spec||'-')} · สุ่ม ${escapeHtml(r.sampleQty||'-')}${r.subLot?(' · Sub lot '+escapeHtml(r.subLot)):''} · แหล่งเนื้อ ${escapeHtml(r.sourceType||'-')}${r.sourceDetail?(' ('+escapeHtml(r.sourceDetail)+')'):''}</div>
+            <div class="meta" style="margin-bottom:8px;">Spec ${escapeHtml(r.spec||'-')} · สุ่ม ${escapeHtml(r.sampleQty||'-')}${r.subLot?(' · Sub lot '+escapeHtml(r.subLot)):''}${r.weight?(' · รับเข้า '+escapeHtml(r.weight)+' kg'):''} · แหล่งเนื้อ ${escapeHtml(r.sourceType||'-')}${r.sourceDetail?(' ('+escapeHtml(r.sourceDetail)+')'):''}</div>
             <button class="btn btn-danger-ghost" onclick="event.stopPropagation(); deleteRecord('${r.id}')">ลบรายการนี้</button>
           </div>
         </div>
@@ -1561,13 +1825,14 @@ function exportExcel(){
     const boneCols = BONE_TYPES[pg];
     const data = rows.map(r=>{
       const base = {
-        'วันที่': fmtDateTh(r.date), 'เวลา': r.time||'', 'ห้อง': r.room, 'สายพาน': r.belt||'', 'สายพาน RM': r.rmBelt||'', 'กะ': r.shift,
-        'ผู้บันทึก': r.recorderName||'',
+        'วันที่': fmtDateTh(r.date), 'สายพาน': r.belt||'', 'ห้อง': r.room,
         'แหล่งเนื้อ': r.sourceType + (r.sourceDetail?(' ('+r.sourceDetail+')'):''),
-        'Std line': r.stdLine, 'จุดสุ่ม': r.samplePoint||'', 'พนักงานประจำจุด': r.staffAdequate||'',
-        'จำนวนคนที่อยู่จริง (ถ้าไม่ครบ)': r.staffCount||'',
-        'Lot': r.lot, 'Sub lot': r.subLot||'', 'Spec': r.spec,
-        'จำนวนสุ่ม': sampleQtyNumber(r.sampleQty), 'หน่วยสุ่ม': sampleQtyUnit(r.sampleQty)
+        'Std line': r.stdLine, 'สุ่ม': r.samplePoint||'',
+        'Spec': r.spec, 'Lot': r.lot, 'Sub lot': r.subLot||'',
+        'สายพาน RM': r.rmBelt||'', 'น้ำหนักรับเข้า (kg)': r.weight||'',
+        'จำนวนสุ่ม': sampleQtyNumber(r.sampleQty), 'หน่วยสุ่ม': sampleQtyUnit(r.sampleQty),
+        'เวลา (กะ)': r.shift, 'เวลาบันทึก': r.time||'', 'ผู้บันทึก': r.recorderName||'',
+        'พนักงานประจำจุด': r.staffAdequate||'', 'จำนวนคนที่อยู่จริง (ถ้าไม่ครบ)': r.staffCount||''
       };
       boneCols.forEach(b=>{ base[b] = r.bones && r.bones[b] ? r.bones[b] : 0; });
       base['รวม'] = r.total;
