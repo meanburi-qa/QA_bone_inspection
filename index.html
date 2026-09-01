@@ -196,6 +196,15 @@
   .field-row{display:flex; gap:10px;}
   .field-row > div{flex:1;}
 
+  .otp-time-group{ display:flex; align-items:center; gap:7px; margin-bottom:12px; }
+  .otp-box{
+    width:44px; height:44px; text-align:center; font-size:19px; font-weight:700;
+    font-family:'IBM Plex Mono',monospace; padding:0; margin-bottom:0;
+    border-radius:9px; border:1.5px solid var(--line); background:#fff; color:var(--text);
+  }
+  .otp-box:focus{ outline:none; border-color:var(--steel); }
+  .otp-colon{ font-size:19px; font-weight:700; color:var(--text-dim); }
+
   .toggle-group{
     display:flex;
     background:#fff;
@@ -461,11 +470,11 @@
     line-height:1.2;
   }
   .cl-narrowhead{ width:22px; }
-  .cl-qtyhead{ width:44px; }
+  .cl-qtyhead{ width:54px; }
   .cl-bonehead{ width:46px; }
   table.checklist-table .cl-stdline{
     white-space:normal;
-    width:60px;
+    width:72px;
     font-family:'Space Grotesk',sans-serif;
     font-weight:600;
     font-size:8.5px;
@@ -473,7 +482,7 @@
   }
   table.checklist-table .cl-sample{
     white-space:normal;
-    width:52px;
+    width:96px;
     color:var(--steel);
     font-weight:600;
     font-size:8.5px;
@@ -481,12 +490,21 @@
   .cl-input-sm{
     box-sizing:border-box;
     width:100%;
-    max-width:40px;
+    max-width:48px;
     padding:1px 2px;
     margin-bottom:0;
     font-size:9px;
     text-align:center;
     border-radius:3px;
+  }
+  .cl-point-field{ margin-top:4px; }
+  .cl-point-field label{
+    display:block; font-size:7px; font-weight:600; text-transform:none;
+    color:var(--steel-dark); margin:0 0 1px; letter-spacing:0;
+  }
+  .cl-point-input, select.cl-point-input{
+    box-sizing:border-box; width:100%; padding:2px 3px; margin-bottom:0;
+    font-size:9px; border-radius:3px; border:1px solid var(--line); background:#fff;
   }
   .cl-bone-input{
     box-sizing:border-box;
@@ -494,7 +512,7 @@
     max-width:40px;
     padding:1px 2px;
     margin-bottom:0;
-    font-size:4px;
+    font-size:10px;
     text-align:center;
     border-radius:3px;
   }
@@ -810,9 +828,9 @@ const STEPS_CONFIG = {
     'Cut up': [
       { id:'bl_cu_01', stdLine:'แล่ BIL : BIL หลังคนแล่จากราว', samples:[ { id:'a', label:'สุ่ม BIL หลังแล่', qty:20 } ] },
       { id:'bl_cu_02', stdLine:'TORIDAS : BIL ก่อนขึ้นราวแขวนหลังคนแต่งกระดูก', samples:[ { id:'a', label:'สุ่ม BIL ก่อนแล่', qty:20 } ] },
-      { id:'bl_cu_03', stdLine:'TORIDAS : RM BL จากท้ายเครื่อง TORIDAS เครื่องที่ Meat rate เยอะที่สุด',
+      { id:'bl_cu_03', stdLine:'TORIDAS : RM BL จากท้ายเครื่อง TORIDAS เครื่องที่ Miss Rate เยอะที่สุด',
         samples:[ { id:'a', label:'สุ่ม BL ท้ายเครื่อง (1 เครื่อง/ไลน์)', qty:'20/เครื่อง', needsRmCode:true } ] },
-      { id:'bl_cu_04', stdLine:'TORIDAS : Inspector ท้ายเครื่อง TORIDAS (ตัดหาง ตัดรูตาแร่ ตัดหนัง)เครื่องที่ Meat rate เยอะที่สุด',
+      { id:'bl_cu_04', stdLine:'TORIDAS : Inspector ท้ายเครื่อง TORIDAS (ตัดหาง ตัดรูตาแร่ ตัดหนัง)เครื่องที่ Miss Rate เยอะที่สุด',
         samples:[ { id:'a', label:'สุ่ม BL หลัง Inspector (1 เครื่อง/ไลน์)', qty:'20/เครื่อง', needsRmCode:true } ] },
       { id:'bl_cu_05', stdLine:'TORIDAS : Inspector ท้ายสายพานก่อนบรรจุถุง (ก่อนผ่าน X-ray)',
         samples:[
@@ -848,7 +866,7 @@ function slotKey(stepId, sampleId, extraIdx){
 const BELT_OPTIONS = {
   BL: {
     'Cut up': [101, 102, 205, 206],
-    'S6':     [126, 128, 150, 153, 155, 232, 234, 257],
+    'S6':     [126, 128, 150, 153, 155, 232, 234, 257, 258, 259],
   },
   BB: {
     'Cut up': [103, 104, 207, 208],
@@ -889,13 +907,26 @@ function nowTimeStr(){
   const p = n => String(n).padStart(2,'0');
   return p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
 }
+// เวลาปัจจุบันแบบตัวเลขล้วน HHMM (4 หลัก) — ใช้เป็นค่าเริ่มต้นของช่องเวลาที่กรอกเอง
+function nowHHMM(){
+  const d = new Date();
+  const p = n => String(n).padStart(2,'0');
+  return p(d.getHours())+p(d.getMinutes());
+}
+// แปลงตัวเลขที่กรอก (เช่น "1430" หรือ "930") ให้เป็นรูปแบบ HH:MM สำหรับบันทึก/แสดงผล
+function formatHHMM(digits){
+  const s = String(digits||'').replace(/[^0-9]/g,'');
+  if(!s) return '';
+  let hh, mm;
+  if(s.length>=3){ hh = s.slice(0,-2); mm = s.slice(-2); }
+  else { hh = '0'; mm = s.padStart(2,'0'); }
+  hh = hh.padStart(2,'0');
+  return hh+':'+mm;
+}
 // อัปเดตเฉพาะ text ของนาฬิกา ไม่เรียก render() ทั้งหน้า กันไม่ให้ scroll/focus กระตุกทุกวินาที
 setInterval(()=>{
   const el = document.getElementById('liveClock');
   if(el) el.textContent = fmtNowTh();
-  // ฟิลด์ "เวลา" ในหัวฟอร์ม ล็อกไว้ที่เวลาปัจจุบันเสมอ ผู้ใช้แก้ไขเองไม่ได้
-  const t = document.getElementById('headerTimeField');
-  if(t) t.value = nowTimeStr();
 }, 1000);
 function rowTotal(bones){ return Object.values(bones||{}).reduce((a,b)=>a+(Number(b)||0),0); }
 
@@ -906,7 +937,7 @@ const state = {
   toast: null,
   toastKind: 'default',
   toastSeq: 0,
-  header: { date: todayStr(), room:'Cut up', shift:'กะ1', recorderName:'', productGroup:'BL', sourceType:'มีนบุรี', sourceDetail:'', lot:'', subLot:'', belt:'', spec:'' },
+  header: { date: todayStr(), time: '', room:'Cut up', shift:'กะ1', recorderName:'', productGroup:'BL', sourceType:'มีนบุรี', sourceDetail:'', lot:'', subLot:'', belt:'', spec:'' },
   showErrors: false,
   alert: null,
   confirmSave: null,
@@ -1075,7 +1106,7 @@ async function loadState(){
     const raw = await Store.get('last-header', false);
     if(raw){
       const h = JSON.parse(raw);
-      state.header = Object.assign(state.header, h, { date: todayStr(), lot:'', subLot:'', spec:'', belt:'', recorderName:'' });
+      state.header = Object.assign(state.header, h, { date: todayStr(), time: '', lot:'', subLot:'', spec:'', belt:'', recorderName:'' });
       // ค่ากะเก่า (เช้า/บ่าย) จากก่อนอัปเดต ให้แปลงเป็น กะ1/กะ2
       if(state.header.shift === 'เช้า') state.header.shift = 'กะ1';
       if(state.header.shift === 'บ่าย') state.header.shift = 'กะ2';
@@ -1262,8 +1293,14 @@ function renderEntryTab(){
       <label>วันที่${reqMark('date')}</label>
       <input type="date" class="${errCls('date').trim()}" value="${h.date}" onchange="updateHeader('date', this.value)">
 
-      <label>เวลา <span style="text-transform:none;font-weight:400;color:var(--text-dim);">(เวลาปัจจุบัน — ล็อกไว้ แก้ไขไม่ได้)</span></label>
-      <input type="text" id="headerTimeField" value="${nowTimeStr()}" readonly disabled style="background:#E9EBE6;color:var(--text-dim);cursor:not-allowed;">
+      <label>เวลา</label>
+      <div class="otp-time-group">
+        <input type="text" inputmode="numeric" maxlength="1" id="timeDigit0" class="otp-box" value="${escapeHtml((h.time||'')[0]||'')}" oninput="handleTimeDigitInput(0,this)" onkeydown="handleTimeDigitKeydown(0,event)">
+        <input type="text" inputmode="numeric" maxlength="1" id="timeDigit1" class="otp-box" value="${escapeHtml((h.time||'')[1]||'')}" oninput="handleTimeDigitInput(1,this)" onkeydown="handleTimeDigitKeydown(1,event)">
+        <span class="otp-colon">:</span>
+        <input type="text" inputmode="numeric" maxlength="1" id="timeDigit2" class="otp-box" value="${escapeHtml((h.time||'')[2]||'')}" oninput="handleTimeDigitInput(2,this)" onkeydown="handleTimeDigitKeydown(2,event)">
+        <input type="text" inputmode="numeric" maxlength="1" id="timeDigit3" class="otp-box" value="${escapeHtml((h.time||'')[3]||'')}" oninput="handleTimeDigitInput(3,this)" onkeydown="handleTimeDigitKeydown(3,event)">
+      </div>
 
       <label>1 · กะ</label>
       <div class="toggle-group">
@@ -1326,7 +1363,7 @@ function renderEntryTab(){
 
 // ---------- CHECKLIST SECTION (แทน modal เดิม) ----------
 function blankEntry(pg){
-  return { rmCode:'', lot:'', spec:'', weight:'', qty:'', bones: Object.fromEntries(BONE_TYPES[pg].map(b=>[b,0])) };
+  return { rmCode:'', lot:'', spec:'', weight:'', qty:'', pointSpec:'', pointBelt:'', bones: Object.fromEntries(BONE_TYPES[pg].map(b=>[b,0])) };
 }
 // สร้าง/รีเซ็ต checklist ให้ตรงกับ กลุ่มสินค้า+ห้อง ปัจจุบันเสมอ — เรียกทุกครั้งก่อน render/save
 function ensureChecklist(){
@@ -1386,7 +1423,7 @@ function toggleStepNoProduction(stepId){
   render();
 }
 function entryIsEmpty(entry){
-  return !entry.rmCode && !entry.lot && !entry.spec && !String(entry.weight||'').trim()
+  return !entry.rmCode && !entry.lot && !entry.spec && !entry.pointSpec && !entry.pointBelt && !String(entry.weight||'').trim()
     && !String(entry.qty||'').trim() && rowTotal(entry.bones)===0;
 }
 
@@ -1432,10 +1469,18 @@ function renderChecklistTable(steps, pg, bones, isS5){
   steps.forEach((step, si)=>{
     const samples = step.samples || [];
     if(samples.length===0){
+      const staff = getStepStaff(step.id);
       rowsHtml += `<tr>
         <td>${si+1}</td>
-        <td class="cl-stdline">${escapeHtml(step.stdLine)}</td>
-        <td colspan="${2 + bones.length + 1}" style="color:var(--text-dim); font-style:italic; white-space:normal;">ไม่มีจุดสุ่มที่ต้องบันทึกตัวเลขในขั้นตอนนี้</td>
+        <td class="cl-stdline">
+          ${escapeHtml(step.stdLine)}
+          <div class="toggle-group cl-staff-toggle">
+            <button class="${staff.adequate==='ครบ'?'active':''}" onclick="setStepStaff('${step.id}','adequate','ครบ')">ครบ</button>
+            <button class="${staff.adequate==='ไม่ครบ'?'active':''}" onclick="setStepStaff('${step.id}','adequate','ไม่ครบ')">ไม่ครบ</button>
+          </div>
+          ${staff.adequate==='ไม่ครบ' ? `<div style="font-size:8px;color:var(--text-dim);margin-top:3px;">จำนวนที่พบ</div><input type="number" min="0" placeholder="คน" class="cl-staffcount-input" value="${escapeHtml(staff.count)}" oninput="setStepStaff('${step.id}','count',this.value)">` : ''}
+        </td>
+        <td colspan="${2 + bones.length + 1}" style="color:var(--text-dim); font-style:italic; white-space:normal;">ไม่มีจุดสุ่มที่ต้องบันทึกตัวเลขในขั้นตอนนี้ (ตรวจเฉพาะพนักงานประจำจุด)</td>
       </tr>`;
       return;
     }
@@ -1500,7 +1545,7 @@ function renderTableRow({step, s, entry, key, isFirstOfStep, rowspan, si, bones,
             ${staff.adequate==='ไม่ครบ' ? `<div style="font-size:8px;color:var(--text-dim);margin-top:3px;">จำนวนที่พบ</div><input type="number" min="0" placeholder="คน" class="cl-staffcount-input" value="${escapeHtml(staff.count)}" oninput="setStepStaff('${step.id}','count',this.value)">` : ''}
           `}
         </td>` : ''}
-      <td class="cl-sample">${escapeHtml(s.label)}</td>
+      <td class="cl-sample">${escapeHtml(s.label)}${renderPointFields(step.id, key, entry)}</td>
       <td>${qtyCell}</td>
       ${bones.map(b=>{
         const bEsc = b.replace(/'/g,"\\'");
@@ -1515,6 +1560,35 @@ function renderTableRow({step, s, entry, key, isFirstOfStep, rowspan, si, bones,
       <td>${noProd ? `<span class="cl-noprod-dash">—</span>` : `<span class="total-pill cl-total-pill ${total===0?'zero':''}" data-slot-total="${kAttr}">${total}</span>`}</td>
     </tr>
   `;
+}
+// ช่องกรอกเพิ่มเติมเฉพาะจุด (ต่างจาก field ระดับหัวฟอร์ม) — โผล่เฉพาะจุดที่ระบุไว้เท่านั้น
+const TORIDAS_MACHINES = ['R1','R2','R3','R4','L1','L2','L3','L4'];
+const POINT_SPEC_ONLY_STEPS = ['bl_s6_09','bl_s6_10','bl_cu_07','bl_cu_08'];                 // เพิ่มเฉพาะ Spec (FG หลังตัดแต่ง) — ต่างจาก Spec RM ของหัวฟอร์ม
+const POINT_SPEC_LOT_BELT_STEPS = ['bb_s5_02','bb_s5_04','bb_s5_08'];  // เพิ่ม Spec/Lot/สายพาน เฉพาะจุด (แถวที่ระบุ "สุ่ม Spec/Lot" อยู่แล้ว)
+const TORIDAS_MACHINE_STEPS = ['bl_cu_03','bl_cu_04'];                 // เลือกเครื่อง Toridas ที่สุ่ม (เก็บใน rmCode เดิม)
+function renderPointFields(stepId, key, entry){
+  const kAttr = cssEscape(key);
+  if(POINT_SPEC_ONLY_STEPS.includes(stepId)){
+    return `<div class="cl-point-field"><label>Spec (FG)</label>
+      <input type="text" class="cl-point-input" placeholder="ระบุ Spec" value="${escapeHtml(entry.pointSpec)}" oninput="updateSlot('${key}','pointSpec',this.value)"></div>`;
+  }
+  if(POINT_SPEC_LOT_BELT_STEPS.includes(stepId)){
+    return `
+      <div class="cl-point-field"><label>Spec</label>
+        <input type="text" class="cl-point-input" placeholder="Spec" value="${escapeHtml(entry.pointSpec)}" oninput="updateSlot('${key}','pointSpec',this.value)"></div>
+      <div class="cl-point-field"><label>Lot</label>
+        <input type="text" class="cl-point-input" placeholder="Lot" value="${escapeHtml(entry.lot)}" oninput="updateSlot('${key}','lot',this.value)"></div>
+      <div class="cl-point-field"><label>สายพาน</label>
+        <input type="text" class="cl-point-input" placeholder="สายพาน" value="${escapeHtml(entry.pointBelt)}" oninput="updateSlot('${key}','pointBelt',this.value)"></div>`;
+  }
+  if(TORIDAS_MACHINE_STEPS.includes(stepId)){
+    return `<div class="cl-point-field"><label>เครื่อง Toridas</label>
+      <select class="cl-point-input" onchange="updateSlot('${key}','rmCode',this.value)">
+        <option value="" ${!entry.rmCode?'selected':''}>—</option>
+        ${TORIDAS_MACHINES.map(m=>`<option value="${m}" ${entry.rmCode===m?'selected':''}>${m}</option>`).join('')}
+      </select></div>`;
+  }
+  return '';
 }
 function setSlotBoneInput(key, bone, el){
   const entry = getEntryByKey(key);
@@ -1541,6 +1615,32 @@ function stepBoneInput(btn, key, bone, delta){
     const total = rowTotal(entry.bones);
     totalEl.textContent = total;
     totalEl.classList.toggle('zero', total === 0);
+  }
+}
+
+// ช่องเวลาแบบ OTP (4 กล่องแยก) — อัปเดต state ตรงๆ โดยไม่เรียก render() เต็มหน้า กันโฟกัสหลุดตอนพิมพ์ต่อเนื่อง
+function readTimeDigits(){
+  return [0,1,2,3].map(i=>{
+    const el = document.getElementById('timeDigit'+i);
+    return el ? el.value : '';
+  }).join('');
+}
+function handleTimeDigitInput(idx, el){
+  el.value = el.value.replace(/[^0-9]/g,'').slice(-1);
+  state.header.time = readTimeDigits();
+  if(el.value && idx < 3){
+    const next = document.getElementById('timeDigit'+(idx+1));
+    if(next){ next.focus(); next.select && next.select(); }
+  }
+}
+function handleTimeDigitKeydown(idx, ev){
+  if(ev.key === 'Backspace' && !ev.target.value && idx > 0){
+    const prev = document.getElementById('timeDigit'+(idx-1));
+    if(prev){
+      prev.value = '';
+      prev.focus();
+      state.header.time = readTimeDigits();
+    }
   }
 }
 
@@ -1618,7 +1718,13 @@ async function saveAllRows(){
   steps.forEach(step=>{
     if(isStepNoProduction(step.id)) return; // ข้ามจุดที่วันนี้ไม่มีการผลิต — ไม่บันทึกเป็นรายการ
     const staff = getStepStaff(step.id);
-    (step.samples||[]).forEach(s=>{
+    const samples = step.samples||[];
+    if(samples.length===0){
+      // ไม่มีจุดสุ่ม/ไม่ตรวจกระดูก แต่ยังต้องบันทึกผลตรวจพนักงานประจำจุด
+      collected.push({ step, s: { id:'staff', label:'' }, entry: blankEntry(pg), staff });
+      return;
+    }
+    samples.forEach(s=>{
       const baseKey = slotKey(step.id, s.id);
       const entry = state.checklist[baseKey] || blankEntry(pg);
       if(!s.repeatable || !entryIsEmpty(entry)){
@@ -1667,7 +1773,7 @@ async function confirmAndSave(){
   state.saving = true; render();
   const h = pending.header;
   const now = Date.now();
-  const nowTime = nowTimeStr();   // เวลาจริง ณ ตอนกดบันทึก — ล็อก แก้ไขเองไม่ได้
+  const nowTime = formatHHMM(h.time) || nowTimeStr();   // เวลาที่กรอกเอง (HHMM) แปลงเป็น HH:MM — ถ้าไม่กรอกไว้ ใช้เวลาจริง ณ ตอนกดบันทึก
   const newRecs = pending.collected.map(({step, s, entry, staff})=>({
     id: uid(),
     date: h.date, time: nowTime, room: h.room, shift: h.shift, recorderName: h.recorderName||'',
@@ -1677,7 +1783,8 @@ async function confirmAndSave(){
     samplePointId: s.id, samplePoint: s.label,
     rmBelt: entry.rmCode||'', weight: entry.weight||'',
     belt: h.belt, staffAdequate: staff.adequate, staffCount: staff.adequate==='ไม่ครบ' ? String(staff.count||'').trim() : '',
-    lot: entry.lot || h.lot, subLot: h.subLot||'', spec: entry.spec || h.spec,
+    lot: entry.lot || h.lot, subLot: h.subLot||'', spec: h.spec,
+    pointSpec: entry.pointSpec||'', pointBelt: entry.pointBelt||'',
     sampleType: '', sampleQty: String(entry.qty||'').trim() || (s.qty!=null ? String(s.qty) : ''),
     bones: entry.bones, total: rowTotal(entry.bones),
     createdAt: now
@@ -1788,7 +1895,7 @@ function renderHistoryTab(){
             <div class="bone-detail-grid">
               ${Object.entries(r.bones||{}).map(([k,v])=>`<div>${escapeHtml(k)}</div><div class="bv ${v>0?'pos':''}">${v}</div>`).join('')}
             </div>
-            <div class="meta" style="margin-bottom:8px;">Spec ${escapeHtml(r.spec||'-')} · สุ่ม ${escapeHtml(r.sampleQty||'-')}${r.subLot?(' · Sub lot '+escapeHtml(r.subLot)):''}${r.weight?(' · รับเข้า '+escapeHtml(r.weight)+' kg'):''} · แหล่งเนื้อ ${escapeHtml(r.sourceType||'-')}${r.sourceDetail?(' ('+escapeHtml(r.sourceDetail)+')'):''}</div>
+            <div class="meta" style="margin-bottom:8px;">Spec ${escapeHtml(r.spec||'-')} · สุ่ม ${escapeHtml(r.sampleQty||'-')}${r.subLot?(' · Sub lot '+escapeHtml(r.subLot)):''}${r.weight?(' · รับเข้า '+escapeHtml(r.weight)+' kg'):''} · แหล่งเนื้อ ${escapeHtml(r.sourceType||'-')}${r.sourceDetail?(' ('+escapeHtml(r.sourceDetail)+')'):''}${r.pointSpec?(' · Spec จุดสุ่ม '+escapeHtml(r.pointSpec)):''}${r.pointBelt?(' · สายพานจุดสุ่ม '+escapeHtml(r.pointBelt)):''}</div>
             <button class="btn btn-danger-ghost" onclick="event.stopPropagation(); deleteRecord('${r.id}')">ลบรายการนี้</button>
           </div>
         </div>
@@ -1829,6 +1936,7 @@ function exportExcel(){
         'แหล่งเนื้อ': r.sourceType + (r.sourceDetail?(' ('+r.sourceDetail+')'):''),
         'Std line': r.stdLine, 'สุ่ม': r.samplePoint||'',
         'Spec': r.spec, 'Lot': r.lot, 'Sub lot': r.subLot||'',
+        'Spec (จุดสุ่ม)': r.pointSpec||'', 'สายพาน (จุดสุ่ม)': r.pointBelt||'',
         'สายพาน RM': r.rmBelt||'', 'น้ำหนักรับเข้า (kg)': r.weight||'',
         'จำนวนสุ่ม': sampleQtyNumber(r.sampleQty), 'หน่วยสุ่ม': sampleQtyUnit(r.sampleQty),
         'เวลา (กะ)': r.shift, 'เวลาบันทึก': r.time||'', 'ผู้บันทึก': r.recorderName||'',
