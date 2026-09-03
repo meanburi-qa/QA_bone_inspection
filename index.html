@@ -717,11 +717,12 @@ const BONE_TYPES = {
   SM: ['กระดูกซี่โครง','กระดูกเอ็นข้าง','กระดูกแตก']
 };
 const PRODUCT_LABEL = { BL:'BL (น่องสะโพกไก่ไร้กระดูก)', BB:'BB (อกไก่ไร้กระดูก)', SM:'SM' };
-// ห้องที่ตรวจได้ในแต่ละกลุ่มสินค้า — BL ไม่มี S5, BB ไม่มี S6
+// ห้องที่ตรวจได้ในแต่ละกลุ่มสินค้า — BB/BL เลือกได้ทั้ง 3 ห้อง เพราะฟอร์ม S5/S6 ใช้ร่วมกัน
+// (แยกกลุ่มสินค้าได้จาก Spec ที่กรอกในฟอร์มอยู่แล้ว ไม่ต้องแยกจุดตรวจตามกลุ่มสินค้า)
 const ROOM_OPTIONS = {
-  BL: ['Cut up', 'S6'],
-  BB: ['Cut up', 'S5'],
-  SM: ['Cut up', 'S5'],
+  BL: ['Cut up', 'S5', 'S6'],
+  BB: ['Cut up', 'S5', 'S6'],
+  SM: ['Cut up', 'S5', 'S6'],
 };
 function roomsFor(productGroup){ return ROOM_OPTIONS[productGroup] || []; }
 // รายชื่อผู้บันทึก แยกตามกะ — ใช้ทำ dropdown ชื่อผู้บันทึก (เลือกได้เฉพาะคนในกะนั้น)
@@ -751,34 +752,66 @@ function sampleQtyUnit(v){
 // แต่ละลำดับ (step) มี samples[] ติดมาด้วยเลย — ไม่ต้องเลือกจุดสุ่มแยกอีกรอบ
 // flags ต่อ sample: needsRmCode / needsLot / needsSpec / needsWeight
 // repeatable:true = ฟอร์มกระดาษเว้นบรรทัดว่างไว้ให้เติมได้หลายรายการ (เช่น หลาย Lot ในกะเดียว)
-// machine = ใช้เฉพาะห้อง S5 (BB) สำหรับแยกหน้าตามเครื่องจักร
+// machine = ใช้เฉพาะห้อง S5 สำหรับแยกหน้าตามเครื่องจักร
 const S5_MACHINES = ['สพ แต่ง','MCM','Gassari','คารูเทอ','X-ray'];
+
+// ---- จุดตรวจของห้อง S5 และ S6 ใช้ "ชุดเดียวกัน" ไม่ว่าจะกำลังตรวจกลุ่มสินค้า BB หรือ BL ----
+// (กลุ่มสินค้าที่แท้จริงของแต่ละรายการทราบได้จาก Spec ที่กรอกในฟอร์ม — ชนิดกระดูกที่นับยังคงแยกตามกลุ่มสินค้าที่เลือกอยู่ดี)
+const SHARED_S5_STEPS = [
+  { id:'bb_s5_01', machine:'สพ แต่ง', stdLine:'S5 (สพ แต่ง) : Inspector แต่งกระดูกหัวสายพาน 1 : 6 คน',
+    samples:[ { id:'a', label:'สุ่ม RM หลัง Inspector แต่งก่อนปล่อยลงสายพาน', qty:20, needsRmCode:true, needsLot:true } ] },
+  { id:'bb_s5_02', machine:'สพ แต่ง', stdLine:'S5 (สพ แต่ง) : Inspector ท้ายสายพาน 2 คน (FG มีน 2, หนองจอก)',
+    samples:[ { id:'a', label:'สุ่ม FG ท้ายสายพานตัดแต่ง — สุ่ม Spec / Lot', needsSpec:true, needsLot:true, repeatable:true } ] },
+  { id:'bb_s5_03', machine:'MCM', stdLine:'S5 (MCM) : Inspector แต่งกระดูกหัวเครื่อง MCM 4 คน',
+    samples:[ { id:'a', label:'สุ่ม SBB ก่อนปล่อยเข้า MCM', qty:20, needsRmCode:true, needsLot:true } ] },
+  { id:'bb_s5_04', machine:'MCM', stdLine:'S5 (MCM) : Inspector ท้ายเครื่อง MCM 2 คน (FG มีน 2, หนองจอก)',
+    samples:[ { id:'a', label:'สุ่ม SBB หลังออก MCM — สุ่ม Spec / Lot', needsSpec:true, needsLot:true, repeatable:true } ] },
+  { id:'bb_s5_05', machine:'Gassari', stdLine:'S5 (Gassari) : Inspector แต่งกระดูกหัวเครื่อง Gassari 2-4 คน',
+    samples:[ { id:'a', label:'สุ่ม SBB ก่อนปล่อยเข้า Gassari', qty:20, needsRmCode:true, needsLot:true } ] },
+  { id:'bb_s5_06', machine:'Gassari', stdLine:'S5 (Gassari) : Inspector ท้ายเครื่อง Gassari 2 คน (FG มีน 2, หนองจอก)',
+    samples:[ { id:'a', label:'สุ่ม SBB หลังออก Gassari', qty:20 } ] },
+  { id:'bb_s5_07', machine:'คารูเทอ', stdLine:'S5 (คารูเทอ) : Inspector ตรวจกระดูกหัวเครื่องคารูเทอ 2-4 คน',
+    samples:[ { id:'a', label:'สุ่ม SBB ก่อนปล่อยเข้า คารูเทอ', qty:20, needsRmCode:true, needsLot:true } ] },
+  { id:'bb_s5_08', machine:'คารูเทอ', stdLine:'S5 (คารูเทอ) : Inspector ท้ายเครื่องคารูเทอ 2 คน (FG มีน 2, หนองจอก)',
+    samples:[ { id:'a', label:'สุ่ม SBB หลังออก คารูเทอ — สุ่ม Spec / Lot', needsSpec:true, needsLot:true, repeatable:true } ] },
+  { id:'bb_s5_09', machine:'X-ray', stdLine:'S5 (X-ray) : ผลิตตรวจรับเข้าทุก Lot / รอบการรับเข้า',
+    samples:[ { id:'a', label:'สุ่ม SBB รับเข้าเนื้อซื้อ', needsLot:true, needsWeight:true, repeatable:true } ] },
+  { id:'bb_s5_10', machine:'X-ray', stdLine:'S5 (X-ray) : Inspector แต่งกระดูกหัว X-ray 6 คน',
+    samples:[ { id:'a', label:'สุ่ม SBB ก่อนผ่าน X-ray', qty:20, needsLot:true } ] },
+  { id:'bb_s5_11', machine:'X-ray', stdLine:'S5 (X-ray) : Inspector ท้าย X-ray 2 คน',
+    samples:[ { id:'a', label:'สุ่ม SBB หลังผ่าน X-ray — สุ่ม Spec / RM', needsSpec:true, needsRmCode:true } ] },
+];
+const SHARED_S6_STEPS = [
+  { id:'bl_s6_01', stdLine:'S6 สายพานแต่งกระดูก : นำ RM BL ขึ้นแต่งกระดูก (ตัดหาง BL)',
+    samples:[
+      { id:'a', label:'สุ่ม BL หลังแต่งกระดูก (ก่อน X-ray S6) RM ธรรมดา', qty:20, needsRmCode:true },
+      { id:'b', label:'สุ่ม BL หลังแต่งกระดูก (ก่อน X-ray S6) RM JAPAN', qty:20, needsRmCode:true },
+    ] },
+  { id:'bl_s6_02', stdLine:'S6 สายพานแต่งกระดูก : X-ray 4 คน/เครื่อง (S6)',
+    samples:[
+      { id:'a', label:'สุ่ม BL หลังผ่าน X-ray RM ธรรมดา', qty:20, needsRmCode:true },
+      { id:'b', label:'สุ่ม BL หลังผ่าน X-ray RM JAPAN', qty:20, needsRmCode:true },
+    ] },
+  { id:'bl_s6_03', stdLine:'RM BIL เนื้อซื้อ : ตรวจรับเข้าทุก Lot',
+    samples:[ { id:'a', label:'สุ่ม BIL', qty:50, needsLot:true, repeatable:true } ] },
+  { id:'bl_s6_04', stdLine:'S6 + CUP UP แล่มือ RM3002 : แต่งกระดูกหัว+แก้ม 4-7 คน',
+    samples:[ { id:'a', label:'สุ่ม BIL หลังผ่านการแต่ง (ตรวจเฉพาะกระดูกหัว+แก้ม)', qty:20 } ] },
+  { id:'bl_s6_05', stdLine:'S6 + CUP UP แล่มือ RM3002 : พนักงานกรีด 2 คนขึ้นไป',
+    samples:[ { id:'a', label:'สุ่ม BIL หลังกรีด (ตรวจเฉพาะกระดูกหัวน่องที่เกิดจากการกรีด)', qty:20 } ] },
+  { id:'bl_s6_06', stdLine:'S6 + CUP UP แล่มือ RM3002 : พนักงานแล่ 8-15 คน',
+    samples:[ { id:'a', label:'สุ่ม BL หลังแล่ (ตรวจเฉพาะเข็มที่เกิดจากการแล่)', qty:20 } ] },
+  { id:'bl_s6_07', stdLine:'S6 + CUP UP แล่สะโพก RM3009 : พนักงานแล่ 10-20 คน',
+    samples:[ { id:'a', label:'สุ่ม BL หลังแล่', qty:20 } ] },
+  { id:'bl_s6_08', stdLine:'S6 + CUP UP แล่สะน่อง RM3010 : จัดกลุ่มแล่ 3 คน/Inspector 1 คน',
+    samples:[ { id:'a', label:'สุ่ม Drum หลังผ่าน Inspector ก่อนบรรจุถุง', qty:'20/กลุ่ม' } ] },
+  { id:'bl_s6_09', stdLine:'BL SCAP MEAT : ไม่ออกจากสายพานแต่งกระดูก ต้องออกจากการตัดแต่ง FG เท่านั้น',
+    samples:[ { id:'a', label:'สุ่ม Spec', qty:'2 kg', needsSpec:true } ] },
+  { id:'bl_s6_10', stdLine:'FG F-30077/F-30027 : ตรวจตำหนิกระดูก',
+    samples:[ { id:'a', label:'สุ่ม Spec', qty:50, needsSpec:true } ] },
+];
+
 const STEPS_CONFIG = {
   BB: {
-    'S5': [
-      { id:'bb_s5_01', machine:'สพ แต่ง', stdLine:'S5 (สพ แต่ง) : Inspector แต่งกระดูกหัวสายพาน 1 : 6 คน',
-        samples:[ { id:'a', label:'สุ่ม RM หลัง Inspector แต่งก่อนปล่อยลงสายพาน', qty:20, needsRmCode:true, needsLot:true } ] },
-      { id:'bb_s5_02', machine:'สพ แต่ง', stdLine:'S5 (สพ แต่ง) : Inspector ท้ายสายพาน 2 คน (FG มีน 2, หนองจอก)',
-        samples:[ { id:'a', label:'สุ่ม FG ท้ายสายพานตัดแต่ง — สุ่ม Spec / Lot', needsSpec:true, needsLot:true, repeatable:true } ] },
-      { id:'bb_s5_03', machine:'MCM', stdLine:'S5 (MCM) : Inspector แต่งกระดูกหัวเครื่อง MCM 4 คน',
-        samples:[ { id:'a', label:'สุ่ม SBB ก่อนปล่อยเข้า MCM', qty:20, needsRmCode:true, needsLot:true } ] },
-      { id:'bb_s5_04', machine:'MCM', stdLine:'S5 (MCM) : Inspector ท้ายเครื่อง MCM 2 คน (FG มีน 2, หนองจอก)',
-        samples:[ { id:'a', label:'สุ่ม SBB หลังออก MCM — สุ่ม Spec / Lot', needsSpec:true, needsLot:true, repeatable:true } ] },
-      { id:'bb_s5_05', machine:'Gassari', stdLine:'S5 (Gassari) : Inspector แต่งกระดูกหัวเครื่อง Gassari 2-4 คน',
-        samples:[ { id:'a', label:'สุ่ม SBB ก่อนปล่อยเข้า Gassari', qty:20, needsRmCode:true, needsLot:true } ] },
-      { id:'bb_s5_06', machine:'Gassari', stdLine:'S5 (Gassari) : Inspector ท้ายเครื่อง Gassari 2 คน (FG มีน 2, หนองจอก)',
-        samples:[ { id:'a', label:'สุ่ม SBB หลังออก Gassari', qty:20 } ] },
-      { id:'bb_s5_07', machine:'คารูเทอ', stdLine:'S5 (คารูเทอ) : Inspector ตรวจกระดูกหัวเครื่องคารูเทอ 2-4 คน',
-        samples:[ { id:'a', label:'สุ่ม SBB ก่อนปล่อยเข้า คารูเทอ', qty:20, needsRmCode:true, needsLot:true } ] },
-      { id:'bb_s5_08', machine:'คารูเทอ', stdLine:'S5 (คารูเทอ) : Inspector ท้ายเครื่องคารูเทอ 2 คน (FG มีน 2, หนองจอก)',
-        samples:[ { id:'a', label:'สุ่ม SBB หลังออก คารูเทอ — สุ่ม Spec / Lot', needsSpec:true, needsLot:true, repeatable:true } ] },
-      { id:'bb_s5_09', machine:'X-ray', stdLine:'S5 (X-ray) : ผลิตตรวจรับเข้าทุก Lot / รอบการรับเข้า',
-        samples:[ { id:'a', label:'สุ่ม SBB รับเข้าเนื้อซื้อ', needsLot:true, needsWeight:true, repeatable:true } ] },
-      { id:'bb_s5_10', machine:'X-ray', stdLine:'S5 (X-ray) : Inspector แต่งกระดูกหัว X-ray 6 คน',
-        samples:[ { id:'a', label:'สุ่ม SBB ก่อนผ่าน X-ray', qty:20, needsLot:true } ] },
-      { id:'bb_s5_11', machine:'X-ray', stdLine:'S5 (X-ray) : Inspector ท้าย X-ray 2 คน',
-        samples:[ { id:'a', label:'สุ่ม SBB หลังผ่าน X-ray — สุ่ม Spec / RM', needsSpec:true, needsRmCode:true } ] },
-    ],
     'Cut up': [
       { id:'bb_cu_01', stdLine:'Cut up : คนแล่อกติดปีก 8 คน', samples:[] },
       { id:'bb_cu_02', stdLine:'Cut up : Inspector แต่งกระดูกหลังแล่อกติดปีก 4 คน ยืนระหว่างคนแล่',
@@ -797,34 +830,6 @@ const STEPS_CONFIG = {
     ],
   },
   BL: {
-    'S6': [
-      { id:'bl_s6_01', stdLine:'S6 สายพานแต่งกระดูก : นำ RM BL ขึ้นแต่งกระดูก (ตัดหาง BL)',
-        samples:[
-          { id:'a', label:'สุ่ม BL หลังแต่งกระดูก (ก่อน X-ray S6) RM ธรรมดา', qty:20, needsRmCode:true },
-          { id:'b', label:'สุ่ม BL หลังแต่งกระดูก (ก่อน X-ray S6) RM JAPAN', qty:20, needsRmCode:true },
-        ] },
-      { id:'bl_s6_02', stdLine:'S6 สายพานแต่งกระดูก : X-ray 4 คน/เครื่อง (S6)',
-        samples:[
-          { id:'a', label:'สุ่ม BL หลังผ่าน X-ray RM ธรรมดา', qty:20, needsRmCode:true },
-          { id:'b', label:'สุ่ม BL หลังผ่าน X-ray RM JAPAN', qty:20, needsRmCode:true },
-        ] },
-      { id:'bl_s6_03', stdLine:'RM BIL เนื้อซื้อ : ตรวจรับเข้าทุก Lot',
-        samples:[ { id:'a', label:'สุ่ม BIL', qty:50, needsLot:true, repeatable:true } ] },
-      { id:'bl_s6_04', stdLine:'S6 + CUP UP แล่มือ RM3002 : แต่งกระดูกหัว+แก้ม 4-7 คน',
-        samples:[ { id:'a', label:'สุ่ม BIL หลังผ่านการแต่ง (ตรวจเฉพาะกระดูกหัว+แก้ม)', qty:20 } ] },
-      { id:'bl_s6_05', stdLine:'S6 + CUP UP แล่มือ RM3002 : พนักงานกรีด 2 คนขึ้นไป',
-        samples:[ { id:'a', label:'สุ่ม BIL หลังกรีด (ตรวจเฉพาะกระดูกหัวน่องที่เกิดจากการกรีด)', qty:20 } ] },
-      { id:'bl_s6_06', stdLine:'S6 + CUP UP แล่มือ RM3002 : พนักงานแล่ 8-15 คน',
-        samples:[ { id:'a', label:'สุ่ม BL หลังแล่ (ตรวจเฉพาะเข็มที่เกิดจากการแล่)', qty:20 } ] },
-      { id:'bl_s6_07', stdLine:'S6 + CUP UP แล่สะโพก RM3009 : พนักงานแล่ 10-20 คน',
-        samples:[ { id:'a', label:'สุ่ม BL หลังแล่', qty:20 } ] },
-      { id:'bl_s6_08', stdLine:'S6 + CUP UP แล่สะน่อง RM3010 : จัดกลุ่มแล่ 3 คน/Inspector 1 คน',
-        samples:[ { id:'a', label:'สุ่ม Drum หลังผ่าน Inspector ก่อนบรรจุถุง', qty:'20/กลุ่ม' } ] },
-      { id:'bl_s6_09', stdLine:'BL SCAP MEAT : ไม่ออกจากสายพานแต่งกระดูก ต้องออกจากการตัดแต่ง FG เท่านั้น',
-        samples:[ { id:'a', label:'สุ่ม Spec', qty:'2 kg', needsSpec:true } ] },
-      { id:'bl_s6_10', stdLine:'FG F-30077/F-30027 : ตรวจตำหนิกระดูก',
-        samples:[ { id:'a', label:'สุ่ม Spec', qty:50, needsSpec:true } ] },
-    ],
     'Cut up': [
       { id:'bl_cu_01', stdLine:'แล่ BIL : BIL หลังคนแล่จากราว', samples:[ { id:'a', label:'สุ่ม BIL หลังแล่', qty:20 } ] },
       { id:'bl_cu_02', stdLine:'TORIDAS : BIL ก่อนขึ้นราวแขวนหลังคนแต่งกระดูก', samples:[ { id:'a', label:'สุ่ม BIL ก่อนแล่', qty:20 } ] },
@@ -854,6 +859,11 @@ const STEPS_CONFIG = {
   },
 };
 function stepsFor(productGroup, room){
+  // ห้อง S5/S6 ของ BB กับ BL ใช้จุดตรวจชุดเดียวกัน (ดูคอมเมนต์ที่ SHARED_S5_STEPS/SHARED_S6_STEPS ด้านบน)
+  if((productGroup==='BB' || productGroup==='BL') && room==='S5') return SHARED_S5_STEPS;
+  if((productGroup==='BB' || productGroup==='BL') && room==='S6') return SHARED_S6_STEPS;
+  // SM ห้อง S5/S6 ใช้จุดตรวจชุดเดียวกับ Cut up ของ SM (ยังไม่มีจุดตรวจเฉพาะห้องแยกให้)
+  if(productGroup==='SM' && (room==='S5' || room==='S6')) return STEPS_CONFIG.SM['Cut up'];
   const byRoom = STEPS_CONFIG[productGroup];
   return (byRoom && byRoom[room]) ? byRoom[room] : [];
 }
@@ -863,23 +873,28 @@ function slotKey(stepId, sampleId, extraIdx){
 
 // หมายเลขสายพานจริง แยกตาม กลุ่มสินค้า > ห้อง (เรียงเลขน้อยไปมากให้หาง่าย)
 // ทุกห้องที่เลือกได้ต้องระบุสายพานเสมอ — คีย์ที่นี่ต้องตรงกับ ROOM_OPTIONS
+// ห้อง S5/S6 ของ BB กับ BL ใช้เลขสายพานชุดเดียวกัน (สายพานผูกกับห้อง ไม่ได้ผูกกับกลุ่มสินค้า)
+const SHARED_BELTS = {
+  S5: [138, 139, 140, 141, 142, 244, 245, 246, 247, 248],
+  S6: [126, 128, 150, 153, 155, 232, 234, 257, 258, 259],
+};
 const BELT_OPTIONS = {
   BL: {
     'Cut up': [101, 102, 205, 206],
-    'S6':     [126, 128, 150, 153, 155, 232, 234, 257, 258, 259],
   },
   BB: {
     'Cut up': [103, 104, 207, 208],
-    'S5':     [138, 139, 140, 141, 142, 244, 245, 246, 247, 248],
   },
   SM: {
     'Cut up': [110, 209],
-    // TODO: รอหมายเลขสายพานห้อง S5 ของ SM จากผู้ใช้ — ใส่ว่างไว้ก่อน
+    // TODO: รอหมายเลขสายพานห้อง S5/S6 ของ SM จากผู้ใช้ — ใส่ว่างไว้ก่อน
     'S5': [],
+    'S6': [],
   },
 };
 // คืนรายการสายพานของกลุ่มสินค้า+ห้องนั้น
 function beltsFor(productGroup, room){
+  if((productGroup==='BB' || productGroup==='BL') && (room==='S5' || room==='S6')) return SHARED_BELTS[room];
   const byRoom = BELT_OPTIONS[productGroup];
   return (byRoom && byRoom[room]) ? byRoom[room] : null;
 }
@@ -1430,7 +1445,7 @@ function entryIsEmpty(entry){
 function visibleSteps(){
   const pg = state.header.productGroup, room = state.header.room;
   let steps = stepsFor(pg, room);
-  if(pg==='BB' && room==='S5'){
+  if(room==='S5' && (pg==='BB' || pg==='BL')){
     if(!state.header.machine || !S5_MACHINES.includes(state.header.machine)) state.header.machine = S5_MACHINES[0];
     steps = steps.filter(st=>st.machine===state.header.machine);
   }
@@ -1441,7 +1456,7 @@ function setS5Machine(m){ state.header.machine = m; render(); }
 function renderChecklistSection(){
   ensureChecklist();
   const pg = state.header.productGroup, room = state.header.room;
-  const isS5 = (pg==='BB' && room==='S5');
+  const isS5 = (room==='S5' && (pg==='BB' || pg==='BL'));
   const steps = visibleSteps();
   const bones = BONE_TYPES[pg];
   return `
@@ -1711,7 +1726,7 @@ async function saveAllRows(){
   // ---- รวบรวมแถวจาก checklist ที่กำลังแสดงอยู่ ----
   // จุดปกติ (ไม่ repeatable) เก็บทุกจุดเสมอ แม้กระดูก=0 (คือผลตรวจ "ผ่าน")
   // จุด repeatable (เช่น รับเข้า Lot) เก็บเฉพาะที่กรอกข้อมูลจริง กันแถวว่างเปล่าปนเข้ามา
-  // ห้อง S5 (BB): บันทึกเฉพาะเครื่องจักรที่กำลังเลือกอยู่ — เครื่องอื่นให้ไปเลือกแล้วบันทึกแยกรอบ
+  // ห้อง S5 (ทั้ง BB/BL): บันทึกเฉพาะเครื่องจักรที่กำลังเลือกอยู่ — เครื่องอื่นให้ไปเลือกแล้วบันทึกแยกรอบ
   const pg = state.header.productGroup, room = state.header.room;
   const steps = visibleSteps();
   const collected = [];
