@@ -1046,7 +1046,7 @@ const state = {
           let text = f.content;
           // ไฟล์เดือนไหนใหญ่เกิน ~1MB จะถูกตัดตอนใน response ปกติ ต้องดึงฉบับเต็มจาก raw_url แทน
           if(f.truncated && f.raw_url){
-            const rawRes = await ghFetch(f.raw_url);
+            const rawRes = await fetch(f.raw_url);
             text = await rawRes.text();
           }
           try{
