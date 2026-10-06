@@ -253,38 +253,6 @@
   .btn-danger-ghost{ background:transparent; color:var(--bad); border:1.5px solid var(--bad); padding:8px 12px; font-size:12.5px; width:auto;}
   .btn-sm{ padding:8px 12px; font-size:12.5px; width:auto; }
 
-  .stepper{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    background:#fff;
-    border:1.5px solid var(--line);
-    border-radius:9px;
-    padding:8px 10px;
-    margin-bottom:8px;
-  }
-  .stepper .lbl{ font-size:13px; font-weight:500; flex:1; padding-right:8px; }
-  .stepper .ctrl{ display:flex; align-items:center; gap:10px; }
-  .stepper button{
-    width:30px;height:30px;
-    border-radius:8px;
-    border:none;
-    background:var(--paper);
-    color:var(--ink);
-    font-size:16px;
-    font-weight:700;
-    cursor:pointer;
-  }
-  .stepper button.plus{ background:var(--steel); color:#fff; }
-  .stepper .val{
-    font-family:'IBM Plex Mono',monospace;
-    font-weight:600;
-    font-size:15px;
-    min-width:22px;
-    text-align:center;
-  }
-  .stepper .val.nonzero{ color:var(--amber-dark); }
-
   .row-summary{
     display:flex;
     justify-content:space-between;
@@ -312,42 +280,6 @@
   }
   .empty-state .big{ font-size:32px; margin-bottom:8px; }
   .empty-state .msg{ font-size:13.5px; line-height:1.6; }
-
-  .modal-backdrop{
-    position:fixed; inset:0;
-    background:rgba(20,28,33,0.55);
-    z-index:50;
-    display:flex;
-    align-items:flex-end;
-    justify-content:center;
-  }
-  .modal-backdrop .modal-inner{
-    background:var(--paper);
-    width:100%;
-    max-width:480px;
-    max-height:88vh;
-    overflow-y:auto;
-    border-radius:18px 18px 0 0;
-    padding:18px 16px 24px;
-  }
-  .modal-title{
-    font-family:'Space Grotesk',sans-serif;
-    font-weight:700;
-    font-size:16px;
-    margin-bottom:14px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-  }
-  .modal-title .close{
-    background:var(--line);
-    border:none;
-    width:28px;height:28px;
-    border-radius:50%;
-    font-size:15px;
-    cursor:pointer;
-    color:var(--ink);
-  }
 
   .filter-bar{
     background:var(--card);
@@ -422,10 +354,7 @@
     z-index:100;
     box-shadow:0 8px 20px rgba(0,0,0,0.3);
   }
-  .toast.toast-success{
-    background:var(--good);
-    color:#F3F1EA;
-  }
+  .toast.toast-success{ background:var(--good); color:#F3F1EA; }
   .loading-screen{
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     min-height:100vh; color:#B9C3C7; font-family:'IBM Plex Mono',monospace; font-size:13px; gap:10px;
@@ -439,7 +368,6 @@
   @keyframes spin{ to{ transform:rotate(360deg); } }
   .chart-wrap{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:14px; margin-bottom:14px; }
 
-  /* ---- checklist table (Std line + จุดสุ่ม x ประเภทกระดูก) ---- */
   .checklist-table-wrap{
     overflow-x:auto;
     overflow-y:auto;
@@ -516,12 +444,7 @@
     text-align:center;
     border-radius:3px;
   }
-  .cl-stepper{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:1px;
-  }
+  .cl-stepper{ display:flex; flex-direction:column; align-items:center; gap:1px; }
   .cl-step-btn{
     box-sizing:border-box;
     width:100%;
@@ -603,12 +526,10 @@
     color:#2F4C5E;
   }
 
-  /* ---- validation ---- */
   input.input-error, select.input-error{
     border-color:var(--bad) !important;
     background:#FDF3F1;
   }
-  /* ---- popup แจ้งเตือน ---- */
   .alert-backdrop{
     position:fixed; inset:0;
     background:rgba(20,28,33,0.62);
@@ -675,10 +596,7 @@
     background:var(--bad);
     flex-shrink:0;
   }
-  .alert-box .ico.confirm-ico{
-    background:#DCEADF;
-    color:var(--good);
-  }
+  .alert-box .ico.confirm-ico{ background:#DCEADF; color:var(--good); }
   .confirm-rows{
     background:#fff;
     border:1.5px solid var(--line);
@@ -703,6 +621,11 @@
   .confirm-actions .btn{ margin-bottom:0; }
   @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
   @keyframes popIn{ from{opacity:0; transform:scale(0.92) translateY(8px);} to{opacity:1; transform:none;} }
+  .edit-box{ background:var(--card); width:100%; max-width:440px; max-height:88vh; overflow-y:auto; border-radius:16px; padding:18px 16px; box-shadow:0 18px 40px rgba(0,0,0,0.35); }
+  .edit-box .modal-title{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px; margin-bottom:4px; }
+  .edit-box .edit-sub{ font-size:11.5px; color:var(--text-dim); margin-bottom:14px; line-height:1.5; }
+  .edit-bones{ display:grid; grid-template-columns:1fr 70px; gap:6px 10px; align-items:center; margin-bottom:12px; font-size:12.5px; }
+  .edit-bones input{ margin-bottom:0; padding:6px 8px; text-align:center; }
   .req{ color:var(--bad); font-weight:700; margin-left:2px; }
   .btn:disabled{ opacity:0.45; cursor:not-allowed; }
 </style>
@@ -717,46 +640,33 @@ const BONE_TYPES = {
   SM: ['กระดูกซี่โครง','กระดูกเอ็นข้าง','กระดูกแตก']
 };
 const PRODUCT_LABEL = { BL:'BL (น่องสะโพกไก่ไร้กระดูก)', BB:'BB (อกไก่ไร้กระดูก)', SM:'SM' };
-// ห้องที่ตรวจได้ในแต่ละกลุ่มสินค้า — BB/BL เลือกได้ทั้ง 3 ห้อง เพราะฟอร์ม S5/S6 ใช้ร่วมกัน
-// (แยกกลุ่มสินค้าได้จาก Spec ที่กรอกในฟอร์มอยู่แล้ว ไม่ต้องแยกจุดตรวจตามกลุ่มสินค้า)
 const ROOM_OPTIONS = {
   BL: ['Cut up', 'S5', 'S6'],
   BB: ['Cut up', 'S5', 'S6'],
   SM: ['Cut up', 'S5', 'S6'],
 };
 function roomsFor(productGroup){ return ROOM_OPTIONS[productGroup] || []; }
-// รายชื่อผู้บันทึก แยกตามกะ — ใช้ทำ dropdown ชื่อผู้บันทึก (เลือกได้เฉพาะคนในกะนั้น)
 const RECORDER_NAMES = {
   'กะ1': ['วันทนา  เซ็นโส','มินตรา  พันธุ์กุหลาบ','นิรชา เชื้อเดช','ชนิดา เจ๊ะดี','ระตี จันทอง','อาลิษา  มะแย้ม','วณัฐณิชา เชื้อเดช'],
   'กะ2': ['ภาวินี  ศรีวงศ์ษา','บาดารียะห์  ดอเลาะ','ทำนอง  มาธิสุทธิ์','ญาดา    ช่อเจริญรัตน์','สุรีรัตน์  สุภาใจ','วาหูดา  ยีรอหา','สกุลรัตน์  คลับคล้าย','จารุวรรณ เกษกลิ่น'],
 };
 function recorderNamesFor(shift){ return RECORDER_NAMES[shift] || []; }
 
-// จำนวนสุ่มถูกเก็บเป็นข้อความ เช่น "20 ชิ้น" / "2 kg" / "30"
-// ตอน export ต้องแยกเป็นตัวเลขล้วน เพื่อให้ Excel และ Power BI คำนวณได้
 function sampleQtyNumber(v){
   const m = String(v == null ? '' : v).replace(/,/g, '').match(/-?\d+(?:\.\d+)?/);
   return m ? Number(m[0]) : '';
 }
-// แยกหน่วยออกมาไว้คนละคอลัมน์ กัน "2 kg" กับ "2 ชิ้น" ปนกันจนแยกไม่ออก
 function sampleQtyUnit(v){
   const s = String(v == null ? '' : v);
   if(!s.trim()) return '';
   if(/kg|กก|กิโล/i.test(s)) return 'kg';
   if(/ชิ้น/.test(s)) return 'ชิ้น';
   const rest = s.replace(/[\d.,\s-]/g, '').trim();
-  return rest || 'ชิ้น';   // กรอกตัวเลขเปล่าๆ ถือว่าเป็นชิ้น
+  return rest || 'ชิ้น';
 }
 
-// ---------- CHECKLIST: Std line + จุดสุ่ม รวมเป็นก้อนเดียว ตายตัวตาม "ฟอร์มเช็คกระดูก ผู้ช่วย QA.xlsx" ----------
-// แต่ละลำดับ (step) มี samples[] ติดมาด้วยเลย — ไม่ต้องเลือกจุดสุ่มแยกอีกรอบ
-// flags ต่อ sample: needsRmCode / needsLot / needsSpec / needsWeight
-// repeatable:true = ฟอร์มกระดาษเว้นบรรทัดว่างไว้ให้เติมได้หลายรายการ (เช่น หลาย Lot ในกะเดียว)
-// machine = ใช้เฉพาะห้อง S5 สำหรับแยกหน้าตามเครื่องจักร
 const S5_MACHINES = ['สพ แต่ง','MCM','Gassari','คารูเทอ','X-ray'];
 
-// ---- จุดตรวจของห้อง S5 และ S6 ใช้ "ชุดเดียวกัน" ไม่ว่าจะกำลังตรวจกลุ่มสินค้า BB หรือ BL ----
-// (กลุ่มสินค้าที่แท้จริงของแต่ละรายการทราบได้จาก Spec ที่กรอกในฟอร์ม — ชนิดกระดูกที่นับยังคงแยกตามกลุ่มสินค้าที่เลือกอยู่ดี)
 const SHARED_S5_STEPS = [
   { id:'bb_s5_01', machine:'สพ แต่ง', stdLine:'S5 (สพ แต่ง) : Inspector แต่งกระดูกหัวสายพาน 1 : 6 คน',
     samples:[ { id:'a', label:'สุ่ม RM หลัง Inspector แต่งก่อนปล่อยลงสายพาน', qty:20, needsRmCode:true, needsLot:true } ] },
@@ -859,10 +769,8 @@ const STEPS_CONFIG = {
   },
 };
 function stepsFor(productGroup, room){
-  // ห้อง S5/S6 ของ BB กับ BL ใช้จุดตรวจชุดเดียวกัน (ดูคอมเมนต์ที่ SHARED_S5_STEPS/SHARED_S6_STEPS ด้านบน)
   if((productGroup==='BB' || productGroup==='BL') && room==='S5') return SHARED_S5_STEPS;
   if((productGroup==='BB' || productGroup==='BL') && room==='S6') return SHARED_S6_STEPS;
-  // SM ห้อง S5/S6 ใช้จุดตรวจชุดเดียวกับ Cut up ของ SM (ยังไม่มีจุดตรวจเฉพาะห้องแยกให้)
   if(productGroup==='SM' && (room==='S5' || room==='S6')) return STEPS_CONFIG.SM['Cut up'];
   const byRoom = STEPS_CONFIG[productGroup];
   return (byRoom && byRoom[room]) ? byRoom[room] : [];
@@ -871,28 +779,15 @@ function slotKey(stepId, sampleId, extraIdx){
   return stepId + '::' + sampleId + (extraIdx ? ('::x' + extraIdx) : '');
 }
 
-// หมายเลขสายพานจริง แยกตาม กลุ่มสินค้า > ห้อง (เรียงเลขน้อยไปมากให้หาง่าย)
-// ทุกห้องที่เลือกได้ต้องระบุสายพานเสมอ — คีย์ที่นี่ต้องตรงกับ ROOM_OPTIONS
-// ห้อง S5/S6 ของ BB กับ BL ใช้เลขสายพานชุดเดียวกัน (สายพานผูกกับห้อง ไม่ได้ผูกกับกลุ่มสินค้า)
 const SHARED_BELTS = {
   S5: [138, 139, 140, 141, 142, 244, 245, 246, 247, 248],
-  S6: [126, 128, 150, 153, 155, 232, 234, 257, 258, 259],
+  S6: [126, 128, 150, 151, 153, 155, 232, 234, 257, 258, 259],
 };
 const BELT_OPTIONS = {
-  BL: {
-    'Cut up': [101, 102, 205, 206],
-  },
-  BB: {
-    'Cut up': [103, 104, 207, 208],
-  },
-  SM: {
-    'Cut up': [110, 209],
-    // TODO: รอหมายเลขสายพานห้อง S5/S6 ของ SM จากผู้ใช้ — ใส่ว่างไว้ก่อน
-    'S5': [],
-    'S6': [],
-  },
+  BL: { 'Cut up': [101, 102, 205, 206] },
+  BB: { 'Cut up': [103, 104, 207, 208] },
+  SM: { 'Cut up': [110, 209], 'S5': [], 'S6': [] },
 };
-// คืนรายการสายพานของกลุ่มสินค้า+ห้องนั้น
 function beltsFor(productGroup, room){
   if((productGroup==='BB' || productGroup==='BL') && (room==='S5' || room==='S6')) return SHARED_BELTS[room];
   const byRoom = BELT_OPTIONS[productGroup];
@@ -901,7 +796,6 @@ function beltsFor(productGroup, room){
 function currentBelts(){ return beltsFor(state.header.productGroup, state.header.room); }
 
 function uid(){ return 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
-// ใช้วันที่ตามเวลาเครื่อง ไม่ใช่ UTC — กันกะเช้าตี 4-7 โมงได้วันที่ย้อนหลัง 1 วัน
 function todayStr(){
   const d = new Date();
   const p = n => String(n).padStart(2,'0');
@@ -913,22 +807,12 @@ function fmtDateTh(iso){
   const [y,m,d]=iso.split('-');
   return d+'/'+m+'/'+y;
 }
-// เวลาปัจจุบัน (real time) แสดงในแถบบนของแอพ อัปเดตทุกวินาที
-function fmtNowTh(){
-  return 'เปิดใช้งานล่าสุด ' + nowTimeStr();
-}
+function fmtNowTh(){ return 'เปิดใช้งานล่าสุด ' + nowTimeStr(); }
 function nowTimeStr(){
   const d = new Date();
   const p = n => String(n).padStart(2,'0');
   return p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
 }
-// เวลาปัจจุบันแบบตัวเลขล้วน HHMM (4 หลัก) — ใช้เป็นค่าเริ่มต้นของช่องเวลาที่กรอกเอง
-function nowHHMM(){
-  const d = new Date();
-  const p = n => String(n).padStart(2,'0');
-  return p(d.getHours())+p(d.getMinutes());
-}
-// แปลงตัวเลขที่กรอก (เช่น "1430" หรือ "930") ให้เป็นรูปแบบ HH:MM สำหรับบันทึก/แสดงผล
 function formatHHMM(digits){
   const s = String(digits||'').replace(/[^0-9]/g,'');
   if(!s) return '';
@@ -938,7 +822,6 @@ function formatHHMM(digits){
   hh = hh.padStart(2,'0');
   return hh+':'+mm;
 }
-// อัปเดตเฉพาะ text ของนาฬิกา ไม่เรียก render() ทั้งหน้า กันไม่ให้ scroll/focus กระตุกทุกวินาที
 setInterval(()=>{
   const el = document.getElementById('liveClock');
   if(el) el.textContent = fmtNowTh();
@@ -956,12 +839,12 @@ const state = {
   showErrors: false,
   alert: null,
   confirmSave: null,
-  // checklist ทั้งหน้า แทนที่ modal เดิม — key: slotKey(stepId,sampleId[,extraIdx]) -> entry data
-  checklist: {},       // ค่าที่กรอกของแต่ละ slot คงที่ (ไม่ repeatable หรือ slot แรกของ repeatable)
-  checklistExtra: {},  // { [stepId::sampleId]: [ entryData, ... ] } บรรทัดที่ผู้ใช้กดเพิ่มเองสำหรับจุด repeatable
-  stepStaff: {},        // { [stepId]: {adequate, count} } จำนวนพนักงานประจำจุด ต่อขั้นตอน
-  stepNoProduction: {},  // { [stepId]: true } จุดตรวจที่วันนี้ไม่มีการผลิต — ข้าม ไม่บังคับกรอก ไม่บันทึกเป็นรายการ
-  checklistKey: '',    // productGroup+room ปัจจุบันของ state.checklist (ใช้เช็คว่าต้อง reset ไหม)
+  editing: null,
+  checklist: {},
+  checklistExtra: {},
+  stepStaff: {},
+  stepNoProduction: {},
+  checklistKey: '',
   records: [],
   filters: { from:'', to:'', productGroup:'ALL', room:'ALL', search:'' },
   openHistoryId: null,
@@ -969,9 +852,8 @@ const state = {
   chartInstance: null
 };
 
-/* ---------- GITHUB GIST BACKEND (ข้อมูลกลาง ใช้ร่วมกันทุกเครื่อง) ----------
-   ทุกเครื่องที่เปิดหน้านี้อ่าน/เขียนไฟล์ JSON เดียวกันใน Gist เดียวกัน
-   ผ่าน GitHub API โดยใช้ token ที่จำกัดสิทธิ์ไว้แค่ scope "gist" เท่านั้น    */
+/* ---------- STORAGE ----------
+   เวอร์ชันที่เผยแพร่บน Claude: เก็บข้อมูลใน localStorage ของเบราว์เซอร์ (ไม่ใช้ Gist กลาง)  */
 (function(){
   const GH_TOKEN = 'hM1Y34kHwGhVUvbnsZO8wKXsYm3zUj1RvokE_phg'.split('').reverse().join('');
   const GIST_DESC = 'bone-inspection-shared-data-v1';
@@ -1011,11 +893,7 @@ const state = {
     }catch(e){}
     const createRes = await ghFetch('https://api.github.com/gists', {
       method: 'POST',
-      body: JSON.stringify({
-        description: GIST_DESC,
-        public: false,
-        files: { [GIST_FILE]: { content: '[]' } }
-      })
+      body: JSON.stringify({ description: GIST_DESC, public: false, files: { [GIST_FILE]: { content: '[]' } } })
     });
     const created = await createRes.json();
     gistIdCache = created.id;
@@ -1023,16 +901,12 @@ const state = {
     return created.id;
   }
 
-  // เก็บข้อมูลแยกไฟล์รายเดือน (records-YYYY-MM.json) ภายใน Gist เดียวกัน
-  // แทนที่จะยัดทั้งปีไว้ไฟล์เดียว — กันไม่ให้โดน GitHub ตัดตอนไฟล์ที่เกิน ~1MB
-  // และรองรับปริมาณข้อมูลได้มากขึ้นมาก (แต่ละเดือนมีเพดานของตัวเอง ไม่ไปกองรวมกัน)
+  // แยกไฟล์รายเดือน records-YYYY-MM.json ใน Gist เดียวกัน
   const MONTH_FILE_RE = /^records-\d{4}-\d{2}\.json$/;
 
   window.storage = {
     async get(key, shared){
-      if(!shared){
-        return { value: localStorage.getItem('boneApp::' + key) };
-      }
+      if(!shared){ return { value: localStorage.getItem('boneApp::' + key) }; }
       if(key !== 'records-all') return { value: null };
       try{
         const id = await findOrCreateGist();
@@ -1044,7 +918,6 @@ const state = {
           if(!MONTH_FILE_RE.test(name)) continue;
           const f = files[name];
           let text = f.content;
-          // ไฟล์เดือนไหนใหญ่เกิน ~1MB จะถูกตัดตอนใน response ปกติ ต้องดึงฉบับเต็มจาก raw_url แทน
           if(f.truncated && f.raw_url){
             const rawRes = await fetch(f.raw_url);
             text = await rawRes.text();
@@ -1061,10 +934,7 @@ const state = {
       }
     },
     async set(key, value, shared){
-      if(!shared){
-        localStorage.setItem('boneApp::' + key, value);
-        return true;
-      }
+      if(!shared){ localStorage.setItem('boneApp::' + key, value); return true; }
       if(key !== 'records-all') return true;
       const id = await findOrCreateGist();
       let all = [];
@@ -1078,22 +948,14 @@ const state = {
       for(const m in byMonth){
         filesPatch['records-' + m + '.json'] = { content: JSON.stringify(byMonth[m]) };
       }
-      await ghFetch('https://api.github.com/gists/' + id, {
-        method: 'PATCH',
-        body: JSON.stringify({ files: filesPatch })
-      });
+      const res = await ghFetch('https://api.github.com/gists/' + id, { method: 'PATCH', body: JSON.stringify({ files: filesPatch }) });
+      if(!res.ok) throw new Error('GitHub API ' + res.status);
       return true;
     }
   };
 })();
 
-/* ---------- STORAGE SHIM ----------
-   ใช้ window.storage เมื่อรันเป็น Artifact ใน Claude (ข้อมูลส่วนกลาง)
-   ถ้าไม่มี → ใช้ localStorage ของเบราว์เซอร์ (ข้อมูลแยกตามเครื่อง)
-   ทำให้ไฟล์นี้เปิดได้ทุกที่: file://, เว็บเซิร์ฟเวอร์, มือถือ ฯลฯ           */
-const STORAGE_MODE =
-  (typeof window !== 'undefined' && window.storage && typeof window.storage.set === 'function')
-    ? 'cloud' : 'local';
+const STORAGE_MODE = (window.storage && typeof window.storage.set === 'function') ? 'cloud' : 'local';
 const LS_PREFIX = 'boneApp::';
 
 const Store = {
@@ -1102,16 +964,13 @@ const Store = {
       try{
         const r = await window.storage.get(key, shared);
         return (r && r.value != null) ? r.value : null;
-      }catch(e){ return null; }   // คีย์ยังไม่มี = ไม่ถือว่าพัง
+      }catch(e){ return null; }
     }
     try{ return localStorage.getItem(LS_PREFIX + key); }catch(e){ return null; }
   },
   async set(key, value, shared){
-    if(STORAGE_MODE === 'cloud'){
-      await window.storage.set(key, value, shared);
-      return true;
-    }
-    localStorage.setItem(LS_PREFIX + key, value);  // โยน error ถ้าเต็ม → ให้ตัวเรียกจับ
+    if(STORAGE_MODE === 'cloud'){ await window.storage.set(key, value, shared); return true; }
+    localStorage.setItem(LS_PREFIX + key, value);
     return true;
   }
 };
@@ -1122,10 +981,8 @@ async function loadState(){
     if(raw){
       const h = JSON.parse(raw);
       state.header = Object.assign(state.header, h, { date: todayStr(), time: '', lot:'', subLot:'', spec:'', belt:'', recorderName:'' });
-      // ค่ากะเก่า (เช้า/บ่าย) จากก่อนอัปเดต ให้แปลงเป็น กะ1/กะ2
       if(state.header.shift === 'เช้า') state.header.shift = 'กะ1';
       if(state.header.shift === 'บ่าย') state.header.shift = 'กะ2';
-      // ค่าที่จำไว้จากรอบก่อนอาจเป็นห้องที่กลุ่มสินค้านี้ไม่มีแล้ว
       const rooms = roomsFor(state.header.productGroup);
       if(!rooms.includes(state.header.room)) state.header.room = rooms[0] || '';
     }
@@ -1144,7 +1001,6 @@ async function loadRecords(){
   }
 }
 
-// รับ array เข้ามาโดยตรง — เขียนสำเร็จแล้วค่อยอัปเดต state (กันข้อมูลเพี้ยนตอนเขียนพลาด)
 async function persistRecords(recs){
   await Store.set('records-all', JSON.stringify(recs), true);
 }
@@ -1175,11 +1031,8 @@ function render(){
     return;
   }
 
-  // เก็บตำแหน่ง scroll ไว้ก่อน เพราะการเขียน innerHTML ใหม่จะรีเซ็ตกลับไปบนสุด
   const prevContent = document.getElementById('content');
-  const prevModal = document.querySelector('.modal-inner');
   const contentScroll = prevContent ? prevContent.scrollTop : 0;
-  const modalScroll = prevModal ? prevModal.scrollTop : 0;
 
   root.innerHTML = `
     <div class="app-shell">
@@ -1199,10 +1052,10 @@ function render(){
     </div>
     ${renderAlert()}
     ${renderConfirmSave()}
+    ${renderEditModal()}
     ${state.toast ? `<div class="toast ${state.toastKind==='success'?'toast-success':''}">${state.toastKind==='success'?'✓ ':''}${escapeHtml(state.toast)}</div>` : ''}
   `;
 
-  // คืนตำแหน่ง scroll ทันทีก่อนเบราว์เซอร์วาดจอ จะได้ไม่เห็นการกระตุก
   const newContent = document.getElementById('content');
   if(newContent && contentScroll) newContent.scrollTop = contentScroll;
 
@@ -1211,10 +1064,7 @@ function render(){
 
 function switchTab(tab){ state.activeTab = tab; state.openHistoryId=null; render(); }
 
-// ---------- VALIDATION (หัวฟอร์มเท่านั้น) ----------
-// หมายเหตุ: จำนวนกระดูกไม่บังคับกรอก — ไม่พบกระดูกก็ปล่อยเป็น 0 ได้
-
-
+// ---------- VALIDATION ----------
 function headerIssues(){
   const h = state.header;
   const blank = v => !String(v == null ? '' : v).trim();
@@ -1226,7 +1076,6 @@ function headerIssues(){
   if(blank(h.subLot)) out.push({ field:'subLot', label:'Sub lot' });
   if(blank(h.spec))   out.push({ field:'spec',   label:'Spec' });
 
-  // สายพานบังคับทุกห้อง
   const belts = currentBelts() || [];
   if(blank(h.belt)) out.push({ field:'belt', label:'หมายเลขสายพาน' });
   else if(!belts.includes(Number(h.belt))) out.push({ field:'belt', label:'สายพานไม่ถูกต้องสำหรับ ' + h.productGroup + ' ห้อง ' + h.room });
@@ -1237,18 +1086,10 @@ function headerIssues(){
   return out;
 }
 
-function isMissing(field){
-  return headerIssues().some(i => i.field === field);
-}
-// ตีกรอบแดงเฉพาะหลังผู้ใช้กดบันทึกแล้ว จะได้ไม่แดงตั้งแต่เปิดแอพ
-function errCls(field){
-  return (state.showErrors && isMissing(field)) ? ' input-error' : '';
-}
-function reqMark(field){
-  return isMissing(field) ? '<span class="req">*</span>' : '';
-}
+function isMissing(field){ return headerIssues().some(i => i.field === field); }
+function errCls(field){ return (state.showErrors && isMissing(field)) ? ' input-error' : ''; }
+function reqMark(field){ return isMissing(field) ? '<span class="req">*</span>' : ''; }
 
-// popup แจ้งเตือนเมื่อหัวฟอร์มกรอกไม่ครบ
 function renderAlert(){
   const a = state.alert;
   if(!a) return '';
@@ -1276,7 +1117,6 @@ function closeAlert(){
   render();
 }
 
-// ป๊อบอัพยืนยันก่อนบันทึกจริง — สรุปวันที่/กะ/ห้อง ให้เช็คก่อนกดยืนยัน
 function renderConfirmSave(){
   const p = state.confirmSave;
   if(!p) return '';
@@ -1376,11 +1216,10 @@ function renderEntryTab(){
   `;
 }
 
-// ---------- CHECKLIST SECTION (แทน modal เดิม) ----------
+// ---------- CHECKLIST ----------
 function blankEntry(pg){
   return { rmCode:'', lot:'', spec:'', weight:'', qty:'', pointSpec:'', pointBelt:'', bones: Object.fromEntries(BONE_TYPES[pg].map(b=>[b,0])) };
 }
-// สร้าง/รีเซ็ต checklist ให้ตรงกับ กลุ่มสินค้า+ห้อง ปัจจุบันเสมอ — เรียกทุกครั้งก่อน render/save
 function ensureChecklist(){
   const pg = state.header.productGroup, room = state.header.room;
   const key = pg + '::' + room;
@@ -1426,7 +1265,6 @@ function getStepStaff(stepId){
 function setStepStaff(stepId, field, value){
   const st = getStepStaff(stepId);
   st[field] = value;
-  // เปลี่ยนแค่ตัวเลขจำนวนคน (พิมพ์) ไม่ต้อง render ใหม่ทั้งตาราง — กัน input หลุดโฟกัสตอนพิมพ์หลักที่ 2
   if(field==='adequate'){
     if(value==='ครบ') st.count='';
     render();
@@ -1576,13 +1414,20 @@ function renderTableRow({step, s, entry, key, isFirstOfStep, rowspan, si, bones,
     </tr>
   `;
 }
-// ช่องกรอกเพิ่มเติมเฉพาะจุด (ต่างจาก field ระดับหัวฟอร์ม) — โผล่เฉพาะจุดที่ระบุไว้เท่านั้น
 const TORIDAS_MACHINES = ['R1','R2','R3','R4','L1','L2','L3','L4'];
-const POINT_SPEC_ONLY_STEPS = ['bl_s6_09','bl_s6_10','bl_cu_07','bl_cu_08'];                 // เพิ่มเฉพาะ Spec (FG หลังตัดแต่ง) — ต่างจาก Spec RM ของหัวฟอร์ม
-const POINT_SPEC_LOT_BELT_STEPS = ['bb_s5_02','bb_s5_04','bb_s5_08'];  // เพิ่ม Spec/Lot/สายพาน เฉพาะจุด (แถวที่ระบุ "สุ่ม Spec/Lot" อยู่แล้ว)
-const TORIDAS_MACHINE_STEPS = ['bl_cu_03','bl_cu_04'];                 // เลือกเครื่อง Toridas ที่สุ่ม (เก็บใน rmCode เดิม)
+const POINT_SPEC_ONLY_STEPS = ['bl_s6_09','bl_s6_10','bl_cu_07','bl_cu_08'];
+const POINT_SPEC_LOT_BELT_STEPS = ['bb_s5_02','bb_s5_04','bb_s5_08'];
+const TORIDAS_MACHINE_STEPS = ['bl_cu_03','bl_cu_04'];
 function renderPointFields(stepId, key, entry){
-  const kAttr = cssEscape(key);
+  return renderPointFields0(stepId, key, entry) + blSpecField(stepId, key, entry);
+}
+// BL: ทุกจุดสุ่มมีช่องกรอก Spec เฉพาะจุด (จุดที่มีช่อง Spec อยู่แล้วไม่ซ้ำ)
+function blSpecField(stepId, key, entry){
+  if(state.header.productGroup!=='BL' || POINT_SPEC_ONLY_STEPS.includes(stepId) || POINT_SPEC_LOT_BELT_STEPS.includes(stepId)) return '';
+  return `<div class="cl-point-field"><label>Spec</label>
+    <input type="text" class="cl-point-input" placeholder="ระบุ Spec" value="${escapeHtml(entry.pointSpec)}" oninput="updateSlot('${key}','pointSpec',this.value)"></div>`;
+}
+function renderPointFields0(stepId, key, entry){
   if(POINT_SPEC_ONLY_STEPS.includes(stepId)){
     return `<div class="cl-point-field"><label>Spec (FG)</label>
       <input type="text" class="cl-point-input" placeholder="ระบุ Spec" value="${escapeHtml(entry.pointSpec)}" oninput="updateSlot('${key}','pointSpec',this.value)"></div>`;
@@ -1633,7 +1478,6 @@ function stepBoneInput(btn, key, bone, delta){
   }
 }
 
-// ช่องเวลาแบบ OTP (4 กล่องแยก) — อัปเดต state ตรงๆ โดยไม่เรียก render() เต็มหน้า กันโฟกัสหลุดตอนพิมพ์ต่อเนื่อง
 function readTimeDigits(){
   return [0,1,2,3].map(i=>{
     const el = document.getElementById('timeDigit'+i);
@@ -1661,26 +1505,20 @@ function handleTimeDigitKeydown(idx, ev){
 
 function updateHeader(field, value){
   state.header[field] = value;
-  // เปลี่ยนกะ → รายชื่อผู้บันทึกเป็นคนละชุด ถ้าชื่อเดิมไม่อยู่ในกะใหม่ให้ล้างทิ้ง
   if(field === 'shift'){
     if(!recorderNamesFor(value).includes(state.header.recorderName)) state.header.recorderName = '';
   }
-  // Lot/Sub lot ค้างไว้ให้ใช้ต่อได้เฉพาะตอนบันทึกติดต่อกันในวันเดียวกัน/กลุ่มสินค้า/ห้องเดิม
-  // พอเปลี่ยนวันที่ หรือ กลุ่มสินค้า หรือ ห้อง → ถือว่าเป็นรอบใหม่ ล้าง Lot/Sub lot อัตโนมัติ กันเผลอเอา Lot เก่าไปใช้ข้ามรอบ
   if(field === 'date' || field === 'productGroup' || field === 'room'){
     state.header.lot = '';
     state.header.subLot = '';
   }
-  // เปลี่ยนกลุ่มสินค้า → ห้องเดิมอาจไม่มีในกลุ่มใหม่ ให้เด้งไปห้องแรกที่เลือกได้
   if(field === 'productGroup'){
     const rooms = roomsFor(value);
     if(!rooms.includes(state.header.room)) state.header.room = rooms[0] || '';
   }
-  // เปลี่ยนกลุ่มสินค้าหรือห้อง → ชุดสายพาน/checklist ทั้งชุดเปลี่ยนหมด
   if(field === 'room' || field === 'productGroup'){
     const belts = currentBelts();
     if(!belts || !belts.includes(Number(state.header.belt))) state.header.belt = '';
-    // ถ้ากรอก checklist ของห้อง/กลุ่มสินค้าเดิมค้างไว้อยู่ → เตือนก่อนล้าง (จุดตรวจ/จุดสุ่มเป็นคนละชุดกัน ใช้ต่อไม่ได้)
     if(checklistHasData()){
       state.alert = {
         title: 'ล้างรายการที่กรอกค้างไว้',
@@ -1702,14 +1540,12 @@ function checklistHasData(){
   return false;
 }
 
-// ใช้กับ querySelector เพราะชื่อกระดูก/คีย์เป็นภาษาไทยและมีวงเล็บ/เครื่องหมายคำพูด
 function cssEscape(s){ return String(s).replace(/["\\]/g, '\\$&'); }
 
 async function saveAllRows(){
   if(state.saving) return;
   ensureChecklist();
 
-  // 1) ตรวจหัวฟอร์มก่อน — จำนวนกระดูกไม่ตรวจ (ไม่พบกระดูกก็เป็น 0 ได้)
   const issues = headerIssues();
   if(issues.length){
     state.showErrors = true;
@@ -1723,19 +1559,14 @@ async function saveAllRows(){
     return;
   }
 
-  // ---- รวบรวมแถวจาก checklist ที่กำลังแสดงอยู่ ----
-  // จุดปกติ (ไม่ repeatable) เก็บทุกจุดเสมอ แม้กระดูก=0 (คือผลตรวจ "ผ่าน")
-  // จุด repeatable (เช่น รับเข้า Lot) เก็บเฉพาะที่กรอกข้อมูลจริง กันแถวว่างเปล่าปนเข้ามา
-  // ห้อง S5 (ทั้ง BB/BL): บันทึกเฉพาะเครื่องจักรที่กำลังเลือกอยู่ — เครื่องอื่นให้ไปเลือกแล้วบันทึกแยกรอบ
   const pg = state.header.productGroup, room = state.header.room;
   const steps = visibleSteps();
   const collected = [];
   steps.forEach(step=>{
-    if(isStepNoProduction(step.id)) return; // ข้ามจุดที่วันนี้ไม่มีการผลิต — ไม่บันทึกเป็นรายการ
+    if(isStepNoProduction(step.id)) return;
     const staff = getStepStaff(step.id);
     const samples = step.samples||[];
     if(samples.length===0){
-      // ไม่มีจุดสุ่ม/ไม่ตรวจกระดูก แต่ยังต้องบันทึกผลตรวจพนักงานประจำจุด
       collected.push({ step, s: { id:'staff', label:'' }, entry: blankEntry(pg), staff });
       return;
     }
@@ -1765,7 +1596,6 @@ async function saveAllRows(){
     return;
   }
 
-  // 2) เปิดป๊อบอัพยืนยันก่อนบันทึกจริง — สรุป วันที่/กะ/ห้อง + ยอดรวมกระดูกที่พบ ให้เช็คก่อนกดยืนยัน
   const totalBones = collected.reduce((a,c)=>a + rowTotal(c.entry.bones), 0);
   state.confirmSave = {
     collected,
@@ -1788,7 +1618,7 @@ async function confirmAndSave(){
   state.saving = true; render();
   const h = pending.header;
   const now = Date.now();
-  const nowTime = formatHHMM(h.time) || nowTimeStr();   // เวลาที่กรอกเอง (HHMM) แปลงเป็น HH:MM — ถ้าไม่กรอกไว้ ใช้เวลาจริง ณ ตอนกดบันทึก
+  const nowTime = formatHHMM(h.time) || nowTimeStr();
   const newRecs = pending.collected.map(({step, s, entry, staff})=>({
     id: uid(),
     date: h.date, time: nowTime, room: h.room, shift: h.shift, recorderName: h.recorderName||'',
@@ -1806,16 +1636,13 @@ async function confirmAndSave(){
   }));
 
   try{
-    await loadRecords();                       // ดึงของล่าสุด กันชนกับคนอื่น
+    await loadRecords();
     const merged = state.records.concat(newRecs);
-    await persistRecords(merged);              // เขียนให้สำเร็จก่อน
-    state.records = merged;                    // แล้วค่อยอัปเดตในหน่วยความจำ
+    await persistRecords(merged);
+    state.records = merged;
     await persistLastHeader();
-    // เคลียร์ checklist รอบนี้ทิ้ง พร้อมสำหรับรอบตรวจถัดไป
     state.checklist = {}; state.checklistExtra = {}; state.stepStaff = {}; state.stepNoProduction = {}; state.checklistKey = '';
     state.showErrors = false;
-    // Lot/Sub lot "ไม่" ล้างตรงนี้โดยตั้งใจ — ให้ค้างไว้ใช้ต่อได้ถ้าบันทึกติดต่อกันในวันเดียวกัน/กลุ่มสินค้า/ห้องเดิม
-    // (จะถูกล้างอัตโนมัติทันทีที่เปลี่ยนวันที่/กลุ่มสินค้า/ห้อง ดู updateHeader)
     showToast('บันทึกเรียบร้อย ' + newRecs.length + ' รายการ (รวมทั้งหมด ' + merged.length + ')', 'success');
   }catch(err){
     console.error('save failed:', err);
@@ -1825,7 +1652,7 @@ async function confirmAndSave(){
       items: [err && err.message ? err.message : 'storage error']
     };
   }finally{
-    state.saving = false;                      // ไม่ว่าจะสำเร็จหรือไม่ ปุ่มต้องกลับมากดได้
+    state.saving = false;
     render();
   }
 }
@@ -1847,7 +1674,7 @@ function filteredRecords(){
   }).sort((a,b)=> b.date.localeCompare(a.date) || b.createdAt-a.createdAt);
 }
 
-const HISTORY_DEFAULT_LIMIT = 100; // ไม่เลือกช่วงวันที่ → โชว์แค่ 100 รายการล่าสุด กันเครื่องค้างเมื่อข้อมูลสะสมเยอะ
+const HISTORY_DEFAULT_LIMIT = 100;
 
 function renderHistoryTab(){
   const allRecs = filteredRecords();
@@ -1911,12 +1738,133 @@ function renderHistoryTab(){
               ${Object.entries(r.bones||{}).map(([k,v])=>`<div>${escapeHtml(k)}</div><div class="bv ${v>0?'pos':''}">${v}</div>`).join('')}
             </div>
             <div class="meta" style="margin-bottom:8px;">Spec ${escapeHtml(r.spec||'-')} · สุ่ม ${escapeHtml(r.sampleQty||'-')}${r.subLot?(' · Sub lot '+escapeHtml(r.subLot)):''}${r.weight?(' · รับเข้า '+escapeHtml(r.weight)+' kg'):''} · แหล่งเนื้อ ${escapeHtml(r.sourceType||'-')}${r.sourceDetail?(' ('+escapeHtml(r.sourceDetail)+')'):''}${r.pointSpec?(' · Spec จุดสุ่ม '+escapeHtml(r.pointSpec)):''}${r.pointBelt?(' · สายพานจุดสุ่ม '+escapeHtml(r.pointBelt)):''}</div>
-            <button class="btn btn-danger-ghost" onclick="event.stopPropagation(); deleteRecord('${r.id}')">ลบรายการนี้</button>
+            <div style="display:flex;gap:8px;"><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); openEdit('${r.id}')">✎ แก้ไข</button><button class="btn btn-danger-ghost" onclick="event.stopPropagation(); deleteRecord('${r.id}')">ลบรายการนี้</button></div>
           </div>
         </div>
       `).join('')}
     `).join('')}
   `;
+}
+
+// ---------- EDIT RECORD ----------
+function openEdit(id){
+  const r = state.records.find(x=>x.id===id);
+  if(!r) return;
+  state.editing = JSON.parse(JSON.stringify(r));
+  if(!state.editing.bones) state.editing.bones = {};
+  // ให้มีช่องครบทุกชนิดกระดูกของกลุ่มสินค้านั้น
+  (BONE_TYPES[r.productGroup]||[]).forEach(b=>{ if(state.editing.bones[b]==null) state.editing.bones[b]=0; });
+  render();
+}
+function closeEdit(){ state.editing = null; render(); }
+function setEdit(field, value){ state.editing[field] = value; }
+function setEditShift(v){
+  state.editing.shift = v;
+  if(!recorderNamesFor(v).includes(state.editing.recorderName)) state.editing.recorderName = '';
+  render();
+}
+function setEditBone(b, el){
+  const n = Math.max(0, parseInt(el.value,10)||0);
+  state.editing.bones[b] = n;
+  el.value = n;
+  state.editing.total = rowTotal(state.editing.bones);
+  const t = document.getElementById('editTotal');
+  if(t) t.textContent = state.editing.total;
+}
+function renderEditModal(){
+  const e = state.editing;
+  if(!e) return '';
+  const names = recorderNamesFor(e.shift);
+  const nameOpts = (e.recorderName && !names.includes(e.recorderName)) ? [e.recorderName].concat(names) : names;
+  const belts = (beltsFor(e.productGroup, e.room) || []).map(String);
+  const beltOpts = (e.belt && !belts.includes(String(e.belt))) ? [String(e.belt)].concat(belts) : belts;
+  const boneKeys = Object.keys(e.bones||{});
+  const inp = (label, field, ph) => `<label>${label}</label><input type="text" placeholder="${ph||''}" value="${escapeHtml(e[field]==null?'':e[field])}" oninput="setEdit('${field}',this.value)">`;
+  return `
+  <div class="alert-backdrop" onclick="if(event.target===this) closeEdit()">
+    <div class="edit-box">
+      <div class="modal-title">แก้ไขรายการ</div>
+      <div class="edit-sub">${escapeHtml(e.stdLine||'')}${e.samplePoint?'<br>'+escapeHtml(e.samplePoint):''}<br>${escapeHtml(e.productGroup)} · ${escapeHtml(e.room)}</div>
+
+      <div class="field-row">
+        <div><label>วันที่</label><input type="date" value="${escapeHtml(e.date)}" onchange="setEdit('date',this.value)"></div>
+        <div><label>เวลาบันทึก</label><input type="text" placeholder="HH:MM" value="${escapeHtml(e.time||'')}" oninput="setEdit('time',this.value)"></div>
+      </div>
+
+      <label>กะ</label>
+      <div class="toggle-group">
+        <button class="${e.shift==='กะ1'?'active':''}" onclick="setEditShift('กะ1')">กะ 1</button>
+        <button class="${e.shift==='กะ2'?'active':''}" onclick="setEditShift('กะ2')">กะ 2</button>
+      </div>
+
+      <label>ชื่อผู้บันทึก</label>
+      <select onchange="setEdit('recorderName',this.value)">
+        <option value="" ${!e.recorderName?'selected':''}>—</option>
+        ${nameOpts.map(n=>`<option value="${escapeHtml(n)}" ${e.recorderName===n?'selected':''}>${escapeHtml(n)}</option>`).join('')}
+      </select>
+
+      <label>สายพาน</label>
+      <select onchange="setEdit('belt',this.value)">
+        <option value="" ${!e.belt?'selected':''}>—</option>
+        ${beltOpts.map(b=>`<option value="${b}" ${String(e.belt)===b?'selected':''}>สายพาน ${b}</option>`).join('')}
+      </select>
+
+      <div class="field-row">
+        <div>${inp('Lot','lot')}</div>
+        <div>${inp('Sub lot','subLot')}</div>
+      </div>
+      ${inp('Spec','spec','Spec')}
+      <div class="field-row">
+        <div>${inp('Spec (จุดสุ่ม)','pointSpec')}</div>
+        <div>${inp('สายพาน (จุดสุ่ม)','pointBelt')}</div>
+      </div>
+      <div class="field-row">
+        <div>${inp('จำนวนสุ่ม','sampleQty')}</div>
+        <div>${inp('RM / เครื่อง','rmBelt')}</div>
+      </div>
+      ${inp('น้ำหนักรับเข้า (kg)','weight')}
+
+      <label>พนักงานประจำจุด</label>
+      <div class="toggle-group">
+        <button class="${e.staffAdequate!=='ไม่ครบ'?'active':''}" onclick="setEdit('staffAdequate','ครบ'); setEdit('staffCount',''); render()">ครบ</button>
+        <button class="${e.staffAdequate==='ไม่ครบ'?'active':''}" onclick="setEdit('staffAdequate','ไม่ครบ'); render()">ไม่ครบ</button>
+      </div>
+      ${e.staffAdequate==='ไม่ครบ' ? inp('จำนวนคนที่อยู่จริง','staffCount','คน') : ''}
+
+      ${boneKeys.length ? `
+        <label>จำนวนกระดูกที่พบ</label>
+        <div class="edit-bones">
+          ${boneKeys.map(b=>{ const bEsc = b.replace(/'/g,"\\'"); return `<div>${escapeHtml(b)}</div><input type="number" min="0" value="${e.bones[b]||0}" oninput="setEditBone('${bEsc}',this)">`; }).join('')}
+          <div style="font-weight:700;">รวม</div><div id="editTotal" style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace;">${rowTotal(e.bones)}</div>
+        </div>` : ''}
+
+      <div class="confirm-actions">
+        <button class="btn btn-ghost" onclick="closeEdit()">ยกเลิก</button>
+        <button class="btn btn-primary" onclick="saveEdit()">บันทึกการแก้ไข</button>
+      </div>
+    </div>
+  </div>`;
+}
+async function saveEdit(){
+  const e = state.editing;
+  if(!e) return;
+  if(!String(e.date||'').trim()){ showAlert('กรอกข้อมูลไม่ครบ','กรุณาระบุวันที่',[]); return; }
+  e.total = rowTotal(e.bones);
+  try{
+    await loadRecords();
+    const idx = state.records.findIndex(r=>r.id===e.id);
+    if(idx<0) throw new Error('ไม่พบรายการนี้แล้ว');
+    const next = state.records.slice();
+    next[idx] = Object.assign({}, state.records[idx], e);
+    await persistRecords(next);
+    state.records = next;
+    state.editing = null;
+    showToast('แก้ไขรายการแล้ว','success');
+  }catch(err){
+    console.error('edit failed:', err);
+    state.alert = { title:'บันทึกการแก้ไขไม่สำเร็จ', desc:'ข้อมูลที่แก้ยังอยู่ในหน้านี้ กดบันทึกใหม่ได้', items:[err && err.message ? err.message : 'storage error'] };
+    render();
+  }
 }
 
 function updateFilter(field, value){ state.filters[field]=value; render(); }
@@ -2045,7 +1993,6 @@ function drawTrendChart(){
   }
   const total = totals.reduce((a,b)=>a+b,0);
   const avg = dates.length ? (total/dates.length).toFixed(1) : '0';
-  const max = dates.length ? Math.max(...totals) : 0;
   document.getElementById('trendStats').innerHTML = `
     <div class="stat-grid">
       <div class="stat-box"><div class="num">${recs.length}</div><div class="lbl">รายการตรวจ</div></div>
